@@ -1,92 +1,69 @@
-# ProLoaF Midterm Project
+# ProLoaF paper reproduction
 
-Mini-project về dự báo xác suất phụ tải điện ngày kế tiếp cho Đức, được xây dựng
-dựa trên bài báo/repository ProLoaF và bộ dữ liệu Open Power System Data (OPSD).
+This repository records a local reproduction of the OPSD illustrative experiment from
+**“ProLoaF: Probabilistic load forecasting for power systems”**. The goal is to run the
+paper's code and configuration before adding any independent extension.
 
-## Phạm vi bài giữa kỳ
+## What has been reproduced
 
-- Dataset: OPSD Time Series, phiên bản `2020-10-06`.
-- Biến mục tiêu: `DE_load_actual_entsoe_transparency` (MW).
-- Tần suất dữ liệu: 1 giờ.
-- Cửa sổ đầu vào: 168 giờ gần nhất.
-- Khoảng dự báo: 24 giờ tiếp theo.
-- Baseline bắt buộc: Seasonal Naive (chu kỳ 24 giờ và/hoặc 168 giờ).
-- Mô hình chính dự kiến: GRU hoặc LSTM.
-- Đánh giá điểm: MAE, RMSE và sMAPE.
-- Đánh giá xác suất: coverage và độ rộng khoảng dự báo 95%.
+- Official paper source is pinned as the `paper_source` Git submodule at commit
+  `1055d1fd3ae00ffce0b67eed03ec84a7410f5da8`.
+- Dataset: the paper's prepared `data/opsd.csv` from its nested data submodule,
+  with 43,824 hourly observations from 2015-01-01 through 2019-12-31.
+- Target: `DE_load_actual_entsoe_transparency`.
+- Model: one-layer probabilistic encoder-decoder LSTM.
+- Input/output: 147 hours of history -> 24 hours ahead.
+- Training finished on 2026-09-24 with early stopping at epoch 41; the best weights
+  were saved from epoch 34.
 
-Đây là một bài tái hiện có phạm vi (scoped reproduction), không phải chạy lại toàn
-bộ repository ProLoaF hoặc tái tạo mọi thí nghiệm trong paper.
+The checkpoint, training log and TensorBoard event file are versioned in
+[`artifacts/paper_reproduction/`](artifacts/paper_reproduction/).
 
-## Cấu trúc dự án
+## Repository layout
 
 ```text
 ProLoaF_/
-├── data/
-│   ├── raw/                 # dữ liệu gốc, không chỉnh sửa
-│   └── processed/           # dữ liệu sau làm sạch/feature engineering
-├── demo/app.py              # ứng dụng demo ở giai đoạn cuối
-├── models/                  # checkpoint mô hình
-├── notebooks/
-│   ├── 01_dataset_exploration.ipynb
-│   ├── 02_baselines.ipynb
-│   ├── 03_gru_model.ipynb
-│   └── 04_evaluation.ipynb
-├── outputs/
-│   ├── figures/
-│   ├── metrics/
-│   └── predictions/
-├── src/                     # mã nguồn có thể tái sử dụng
-├── requirements.txt         # ràng buộc dependency tối thiểu
-└── requirements-lock.txt    # phiên bản đã cài trong môi trường hiện tại
+├── paper_source/                 # official source, pinned as a Git submodule
+├── artifacts/paper_reproduction/ # checkpoint and training evidence from this run
+├── reproduction/                 # protocol and exact run record
+├── data/README.md                # data provenance; raw files are not duplicated here
+├── notebooks/README.md           # points to original notebooks in paper_source
+└── requirements.txt              # pinned Python dependencies for this reproduction
 ```
 
-## Thiết lập môi trường trên Windows PowerShell
+## Clone and set up
 
-Yêu cầu Python 3.11. Nếu PowerShell chưa nhận lệnh `conda activate`, đóng rồi mở
-lại terminal sau khi chạy `conda init powershell`.
+Clone recursively so that both the paper source and its original data submodule are
+available:
 
 ```powershell
-conda create -n proloaf-midterm python=3.11 -y
-conda activate proloaf-midterm
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
-python -m ipykernel install --user --name proloaf-midterm --display-name "Python (ProLoaF Midterm)"
+git clone --recurse-submodules https://github.com/minquanle/ProLoaF_.git
+cd ProLoaF_
+conda create -n proloaf-paper-repro python=3.9 -y
+conda activate proloaf-paper-repro
+python -m pip install --no-cache-dir -r requirements.txt
+python -m pip install --no-deps -e .\paper_source
+python -m ipykernel install --user --name proloaf-paper-repro --display-name "Python (ProLoaF Paper Reproduction)"
 ```
 
-Kiểm tra môi trường:
+## Re-run training
 
 ```powershell
-python -c "import sys, torch, pandas, sklearn; print(sys.executable); print(sys.version); print(torch.__version__); print(pandas.__version__); print(sklearn.__version__)"
-jupyter kernelspec list
+conda activate proloaf-paper-repro
+cd paper_source
+python .\src\train.py -s opsd
 ```
 
-Kết quả mong đợi: Python trỏ tới
-`miniconda3\envs\proloaf-midterm\python.exe`, phiên bản Python là 3.11 và kernel
-`proloaf-midterm` xuất hiện trong danh sách.
+The original code sets `torch.manual_seed(1)`. It uses the default Gaussian negative
+log-likelihood loss (`NllGauss`) and early stopping with patience 7.
 
-## Chạy notebook
+## Current status and next work
 
-Có thể mở notebook trực tiếp trong editor có hỗ trợ Jupyter, hoặc chạy JupyterLab:
+The LSTM training stage is complete. The next stage is evaluation of the saved
+checkpoint on the held-out test period, followed by the paper baselines: Persistence,
+Seasonal Naive, Naive-STL, SARIMA and Prophet. GRU is deliberately not treated as the
+paper model; it may be added later as a separate extension with the same data split
+and metrics.
 
-```powershell
-conda activate proloaf-midterm
-jupyter lab
-```
-
-Trong notebook, chọn kernel **Python (ProLoaF Midterm)**. Chạy notebook theo thứ
-tự `01` → `02` → `03` → `04` vì đầu ra của các bước sau phụ thuộc bước trước.
-
-## Dữ liệu
-
-Nguồn chính thức:
-[OPSD Time Series 2020-10-06](https://data.open-power-system-data.org/time_series/2020-10-06/).
-
-Dữ liệu tải về được đặt trong `data/raw/` và không commit lên Git. File đã xử lý
-đặt trong `data/processed/`. Không chỉnh sửa trực tiếp file dữ liệu gốc.
-
-## Trạng thái
-
-Setup ban đầu đã hoàn tất. Bước tiếp theo là tải đúng file OPSD, kiểm tra schema,
-chọn khoảng thời gian nghiên cứu và thực hiện EDA trong notebook `01`.
+See [`reproduction/REPRODUCTION_PROTOCOL.md`](reproduction/REPRODUCTION_PROTOCOL.md)
+and [`reproduction/RUN_CARD.md`](reproduction/RUN_CARD.md) for the full provenance.

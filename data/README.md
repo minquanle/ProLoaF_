@@ -1,7 +1,16 @@
-# Data directory
+# Data provenance
 
-- `raw/`: lưu file OPSD gốc, không chỉnh sửa tại chỗ.
-- `processed/`: lưu dữ liệu đã làm sạch và các đặc trưng dùng cho mô hình.
+The reproduction does not duplicate large raw OPSD CSV files in this repository.
+After a recursive clone, the paper source's nested `data` submodule provides the
+prepared file used by the original configuration:
 
-Các file dữ liệu lớn bị loại khỏi Git bằng `.gitignore`. Chỉ các file `.gitkeep`
-được theo dõi để giữ lại cấu trúc thư mục.
+```text
+paper_source/data/opsd.csv
+```
+
+It has 43,824 hourly rows, covers 2015-01-01 to 2019-12-31, and contains the German
+load target, Austrian load, weather variables, and calendar features needed by the
+paper configuration. The source preprocessing configuration also documents the raw
+OPSD Time Series release `2020-10-06` and weather-data release `2020-09-16`.
+
+Local raw downloads may be kept in `data/raw/`; they are intentionally ignored by Git.

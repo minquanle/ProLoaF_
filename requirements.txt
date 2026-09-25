@@ -1,12 +1,19 @@
-numpy>=2.0
-pandas>=2.2
-matplotlib>=3.9
-seaborn>=0.13
-scikit-learn>=1.5
-statsmodels>=0.14
-joblib>=1.4
-jupyterlab>=4.2
-ipykernel>=6.29
-# Tornado 6.5.9 breaks JupyterLab theme serving with current jupyter_server.
-tornado>=6.2,<6.5.9
-# PyTorch is installed separately for CPU or CUDA.
+# Pinned environment used for the paper reproduction on Windows CPU.
+numpy==1.23.5
+pandas==1.5.3
+scipy==1.9.3
+scikit-learn==1.1.3
+matplotlib==3.6.3
+statsmodels==0.13.5
+pmdarima==1.8.5
+torch==1.13.1
+arch==5.3.1
+optuna==2.10.1
+tensorboard==2.11.2
+prophet==1.1.5
+plotly==5.18.0
+ipywidgets==8.1.5
+ipykernel==6.29.5
+pyparsing==2.4.7
+greenlet==2.0.2
+SQLAlchemy==1.4.54
