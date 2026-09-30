@@ -25,3 +25,8 @@ notebooks/01_dataset_exploration.ipynb
 
 # Do not commit local package metadata produced by editable installs.
 paper_source/src/proloaf.egg-info/
+
+# Runtime logs, Office lock files and document-rendering QA intermediates.
+eventlog.log
+artifacts/paper_reproduction/report/qa_*/
+artifacts/paper_reproduction/report/~$*

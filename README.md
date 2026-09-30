@@ -84,13 +84,48 @@ The comparison remains indicative rather than strictly fair: Prophet's notebook
 uses an 80/20 fit/test split and full-data target scaling, while the existing LSTM
 checkpoint used its configured 60/20/20 split and training-only scaling.
 
+## Post-hoc interval calibration extension
+
+The paper-reproduction LSTM outputs both a point forecast (the Gaussian mean
+`mu`) and an uncertainty estimate (`sigma`). The original 95% interval on the
+held-out test data had empirical coverage of 97.10%, so it was slightly too wide.
+This repository adds a clearly separated post-hoc extension: standard-deviation
+scaling. It does **not** retrain or alter the LSTM point forecast.
+
+First choose a multiplier only on the validation period (the original OPSD rows
+60% to 80%):
+
+```powershell
+conda activate proloaf-paper-repro
+python .\reproduction\calibrate_lstm_intervals.py
+```
+
+Then evaluate that frozen multiplier exactly as selected on the held-out test
+period (80% to 100%):
+
+```powershell
+python .\reproduction\evaluate_calibrated_lstm_on_test.py
+```
+
+For this run, validation selected `c = 0.841887`. On test, PICP changed from
+97.10% to **95.06%**, while Sharpness decreased from 0.268506 to **0.226052**.
+RMSE and MAE stay unchanged because calibration only rescales the interval around
+the same point forecast. Results, the full coefficient sweep and the validation
+trade-off figure are in
+[`artifacts/paper_reproduction/interval_calibration/`](artifacts/paper_reproduction/interval_calibration/).
+
+`MIS_standard_95` is the standard alpha=0.05 mean interval score. It is reported
+separately from `ProLoaF_legacy_MIS`: the latter preserves the value printed by
+the original source, whose `Mis.from_quantiles` method includes the median when
+selecting alpha and therefore does not score the displayed 95% interval.
+
 ## Current status and next work
 
-The LSTM training stage is complete. The next stage is evaluation of the saved
-checkpoint on the held-out test period, followed by the paper baselines: Persistence,
-Seasonal Naive, Naive-STL, SARIMA and Prophet. GRU is deliberately not treated as the
-paper model; it may be added later as a separate extension with the same data split
-and metrics.
+Completed: LSTM training and test evaluation, Simple Naive and Seasonal Naive
+baselines, the Prophet notebook reproduction, and the validation-only interval
+calibration extension. The next deliverables are an interactive demonstration and
+presentation slides. GRU is deliberately not treated as the paper model; it may be
+added later as a separate extension with the same data split and metrics.
 
 See [`reproduction/REPRODUCTION_PROTOCOL.md`](reproduction/REPRODUCTION_PROTOCOL.md)
 and [`reproduction/RUN_CARD.md`](reproduction/RUN_CARD.md) for the full provenance.

@@ -1,0 +1,17 @@
+{
+  "purpose": "Post-hoc standard-deviation scaling selected on validation only",
+  "test_set_used": false,
+  "checkpoint": "C:\\Nam 4\\ProLoaF-paper-reproduction\\oracles\\opsd_recurrent.pkl",
+  "config": "C:\\Nam 4\\ProLoaF-paper-reproduction\\targets\\opsd\\config.json",
+  "data": "C:\\Nam 4\\ProLoaF-paper-reproduction\\data\\opsd.csv",
+  "validation_period": "original OPSD rows [60%, 80%)",
+  "validation_windows": 8595,
+  "forecast_horizon_hours": 24,
+  "confidence_level_percent": 95.0,
+  "z_0_975": 1.9599639845400536,
+  "formula": "lower = mu - z_0.975 * c * sigma; upper = mu + z_0.975 * c * sigma",
+  "selection_rule": "c = empirical 95th percentile of abs(y-mu)/(z_0.975*sigma) on validation",
+  "mis_definition": "standard 95% mean interval score, not ProLoaF's legacy Mis.from_quantiles output",
+  "selected_c": 0.8418872147798535,
+  "created_utc": "2026-09-30T08:49:42.995478+00:00"
+}

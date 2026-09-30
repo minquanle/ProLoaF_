@@ -18,7 +18,7 @@ from docx.shared import Inches, Pt, RGBColor
 
 REPO = Path(r"C:\Nam 4\ProLoaF_")
 SOURCE = Path(r"C:\Nam 4\ProLoaF-paper-reproduction")
-OUT = REPO / "artifacts" / "paper_reproduction" / "report" / "Bao_cao_hoan_chinh_ProLoaF.docx"
+OUT = REPO / "artifacts" / "paper_reproduction" / "report" / "Bao_cao_hoan_chinh_ProLoaF_cap_nhat_calibration.docx"
 ASSET_DIR = Path(tempfile.gettempdir()) / "proloaf_detailed_report_assets"
 
 TRAIN_LOG = REPO / "artifacts" / "paper_reproduction" / "training.log"
@@ -29,6 +29,10 @@ PROPHET_DIR = REPO / "artifacts" / "paper_reproduction" / "prophet_paper_protoco
 PROPHET_METRICS = PROPHET_DIR / "prophet_protocol_metrics.csv"
 PROPHET_COMPARISON = PROPHET_DIR / "lstm_vs_prophet_indicative_MW.csv"
 PROPHET_FIG = PROPHET_DIR / "prophet_first_aligned_24h.png"
+CALIBRATION_DIR = REPO / "artifacts" / "paper_reproduction" / "interval_calibration"
+CALIBRATION_TEST = CALIBRATION_DIR / "test_calibrated_summary.csv"
+CALIBRATION_META = CALIBRATION_DIR / "selected_calibration.json"
+CALIBRATION_FIG = CALIBRATION_DIR / "validation_calibration_tradeoff.png"
 CONFIG = SOURCE / "targets" / "opsd" / "config.json"
 
 METRIC_FIG = SOURCE / "oracles" / "eval_opsd_recurrent" / "metrics-evaluation_metrics_plot.png"
@@ -407,6 +411,10 @@ def main():
     prophet_comparison = pd.read_csv(PROPHET_COMPARISON)
     prophet_literal = prophet_metrics.loc[prophet_metrics["protocol"] == "paper_literal_80pct"].iloc[0]
     prophet_aligned = prophet_metrics.loc[prophet_metrics["protocol"] == "chronological_aligned_95pct"].iloc[0]
+    calibration_test = pd.read_csv(CALIBRATION_TEST)
+    calibration_meta = json.loads(CALIBRATION_META.read_text(encoding="utf-8"))
+    lstm_original_interval = calibration_test.loc[calibration_test["interval"] == "original_paper_checkpoint"].iloc[0]
+    lstm_calibrated_interval = calibration_test.loc[calibration_test["interval"] == "validation_calibrated_frozen_c"].iloc[0]
     training_curve, comparison_chart = create_charts(comparison)
 
     doc = Document()
@@ -425,7 +433,7 @@ def main():
 
     heading(doc, "Tóm tắt kết quả", 1)
     body(doc, "Báo cáo này ghi lại toàn bộ quá trình tái lập case study dự báo phụ tải điện Đức của paper ProLoaF. Chúng ta đã dùng mã nguồn chính thức của tác giả, chuẩn bị đúng dữ liệu OPSD, huấn luyện lại mô hình Encoder Decoder LSTM, đánh giá checkpoint trên tập test và xây dựng hai baseline đơn giản. Phần Prophet trong notebook gốc cũng đã được chạy và kiểm tra lại theo timestamp.")
-    body(doc, "Kết quả chính là pipeline chạy hoàn chỉnh trên máy cá nhân. Mô hình LSTM đạt RMSE 0,070556 và MAE 0,045787 trên thang MinMax. Quy đổi theo miền giá trị train, hai sai số này xấp xỉ 3 263 MW và 2 117 MW. Khoảng dự báo 95 phần trăm bao phủ 97,10 phần trăm dữ liệu thực tế. So với Seasonal Naive 24 giờ, LSTM giảm RMSE 52,93 phần trăm và giảm MAE 53,38 phần trăm.")
+    body(doc, "Kết quả chính là pipeline chạy hoàn chỉnh trên máy cá nhân. Mô hình LSTM đạt RMSE 0,070556 và MAE 0,045787 trên thang MinMax. Quy đổi theo miền giá trị train, hai sai số này xấp xỉ 3 263 MW và 2 117 MW. Bản gốc có khoảng dự báo 95 phần trăm bao phủ 97,10 phần trăm dữ liệu thực tế. Cải tiến calibration hậu xử lý đưa coverage test về 95,06 phần trăm và thu hẹp khoảng 15,8 phần trăm, không làm thay đổi dự báo điểm. So với Seasonal Naive 24 giờ, LSTM giảm RMSE 52,93 phần trăm và giảm MAE 53,38 phần trăm.")
     body(doc, "Giới hạn quan trọng là paper không công bố một bảng metric tổng hợp tương ứng cho checkpoint LSTM, đồng thời repository chính thức không kèm checkpoint đã huấn luyện. Vì vậy kết quả hiện tại chứng minh rằng chúng ta tái lập được quy trình và thu được kết quả hợp lý; chưa thể tuyên bố các con số trùng khớp tuyệt đối với tác giả.")
     add_table(doc, ["Hạng mục", "Trạng thái", "Kết quả hiện tại"], [
         ["Nguồn paper", "Hoàn thành", "Đã cố định source chính thức tại commit 1055d1fd"],
@@ -434,6 +442,7 @@ def main():
         ["Đánh giá LSTM", "Hoàn thành", "8 595 forecast origins, horizon 24 giờ"],
         ["Hai baseline", "Hoàn thành", "Simple Naive và Seasonal Naive 24 giờ"],
         ["Prophet", "Hoàn thành", "Fit một lần, forecast liên tục và căn timestamp"],
+        ["Calibration khoảng LSTM", "Hoàn thành", "Validation chọn c, test đạt coverage 95,06 phần trăm"],
         ["Demo và slide", "Chưa hoàn thành", "Đây là ưu tiên tiếp theo"],
     ], [2.0, 1.25, 3.75])
 
@@ -592,11 +601,21 @@ def main():
     ], [1.65, 1.8, 3.55])
     body(doc, "PICP 97,10 phần trăm nghĩa là khoảng dự báo đang hơi bảo thủ: coverage cao hơn mục tiêu 95 phần trăm nhưng khoảng có thể rộng hơn cần thiết. Đây không phải lỗi nghiêm trọng; nó cho thấy hướng cải thiện sau này là calibration để đưa coverage gần 95 phần trăm trong khi giảm sharpness.")
     add_figure(doc, METRIC_FIG, "Hình 2 RMSE coverage sharpness và MIS theo 24 horizon", width=6.55)
-    heading(doc, "8 4 Kết quả theo horizon", 2)
+    heading(doc, "8 4 Cải tiến calibration khoảng dự báo", 2)
+    body(doc, "Cải tiến này không train lại LSTM và không đổi dự báo trung tâm mu. LSTM gốc vẫn dự báo đồng thời mu và độ bất định sigma cho mỗi giờ. Ta chỉ dùng validation từ 60 đến 80 phần trăm chuỗi để tìm hệ số c, sau đó thay khoảng gốc mu cộng trừ 1,95996 sigma bằng mu cộng trừ 1,95996 c sigma. Hệ số được đóng băng trước khi đánh giá test nên test không được dùng để chọn c.")
+    body(doc, "Hệ số chọn được là c bằng {:.6f}, nhỏ hơn 1. Điều đó có nghĩa khoảng gốc của LSTM hơi rộng; calibration thu hẹp khoảng nhưng vẫn giữ nguyên giá trị tải điện dự báo. Vì mu không đổi, RMSE và MAE phải giữ nguyên về mặt toán học. PICP, sharpness và MIS mới là các metric thay đổi.".format(calibration_meta["selected_c"]))
+    add_table(doc, ["Phiên bản LSTM trên test", "PICP", "Sharpness", "RMSE", "MAE", "MIS 95 phần trăm"], [
+        ["Gốc", f'{lstm_original_interval["PICP_percent"]:.2f} phần trăm', f'{lstm_original_interval["Sharpness"]:.6f}', f'{lstm_original_interval["RMSE"]:.6f}', f'{lstm_original_interval["MAE"]:.6f}', f'{lstm_original_interval["MIS_standard_95"]:.6f}'],
+        ["Calibrated c cố định", f'{lstm_calibrated_interval["PICP_percent"]:.2f} phần trăm', f'{lstm_calibrated_interval["Sharpness"]:.6f}', f'{lstm_calibrated_interval["RMSE"]:.6f}', f'{lstm_calibrated_interval["MAE"]:.6f}', f'{lstm_calibrated_interval["MIS_standard_95"]:.6f}'],
+    ], [1.6, 1.0, 1.0, 0.95, 0.95, 1.1], numeric_cols=[1, 2, 3, 4, 5], font_size=8.4)
+    body(doc, "Kết quả test xác nhận cải tiến thành công: PICP giảm từ 97,10 xuống 95,06 phần trăm, chỉ cách mục tiêu 95 phần trăm 0,06 điểm phần trăm. Sharpness giảm từ 0,268506 xuống 0,226052, tương đương khoảng 15,8 phần trăm. Standard MIS 95 phần trăm cũng giảm nhẹ từ 0,354555 xuống 0,352670. Đây là cải tiến về chất lượng ước lượng bất định, không phải cải tiến độ chính xác điểm.")
+    body(doc, "Lưu ý kỹ thuật: output Mis 0,091573 của evaluate py gốc không được dùng để kết luận cho khoảng 95 phần trăm, vì Mis.from quantiles của phiên bản source này vô tình xét quantile trung vị 0,5 khi chọn alpha. Báo cáo dùng MIS standard 95 phần trăm được tính trực tiếp từ hai biên khoảng và alpha bằng 0,05; đồng thời vẫn lưu legacy MIS để đối chiếu output gốc.")
+    add_figure(doc, CALIBRATION_FIG, "Hình 3 Calibration trên validation: coverage, sharpness và standard MIS theo hệ số c", width=6.55)
+    heading(doc, "8 5 Kết quả theo horizon", 2)
     body(doc, "RMSE giảm mạnh sau giờ đầu, đạt mức thấp nhất quanh horizon 4 rồi tăng dần đến giờ 24. Mẫu này hợp lý vì dự báo càng xa thường càng khó. PICP giảm nhẹ từ khoảng 97,47 phần trăm ở horizon đầu xuống khoảng 96,77 phần trăm ở horizon cuối nhưng vẫn cao hơn 95 phần trăm. Sharpness cũng thu hẹp nhanh ở vài giờ đầu rồi tăng nhẹ khi horizon dài hơn.")
-    add_figure(doc, FORECAST_FIG_0, "Hình 3 Ví dụ dự báo tại một cửa sổ test", width=6.45)
-    add_figure(doc, FORECAST_FIG_24, "Hình 4 Ví dụ dự báo tại một cửa sổ test khác", width=6.45)
-    heading(doc, "8 5 Lưu ý về MASE", 2)
+    add_figure(doc, FORECAST_FIG_0, "Hình 4 Ví dụ dự báo tại một cửa sổ test", width=6.45)
+    add_figure(doc, FORECAST_FIG_24, "Hình 5 Ví dụ dự báo tại một cửa sổ test khác", width=6.45)
+    heading(doc, "8 6 Lưu ý về MASE", 2)
     body(doc, "Output gốc có MASE 1,109877. Tuy nhiên evaluate py hiện tại dùng tần suất mặc định 1, nên mẫu số tương ứng với persistence một giờ chứ không phải Seasonal Naive 24 giờ. Vì lý do đó, báo cáo không dùng MASE để kết luận LSTM tốt hay kém hơn Seasonal Naive.")
 
     heading(doc, "9 Xây dựng hai baseline", 1)
@@ -743,11 +762,11 @@ def main():
     body(doc, "3. Không đẩy dataset hoặc file tạm quá lớn nếu GitHub đã có nguồn tải rõ ràng.")
     body(doc, "4. Đảm bảo checkpoint, metric CSV, hình kết quả và script baseline nằm trong repository nộp bài.")
     heading(doc, "14 4 Nâng cấp nếu còn thời gian", 2)
-    body(doc, "Sau khi demo và slide đã hoàn thành, có thể chọn một nâng cấp có kiểm soát. Phương án phù hợp nhất là calibration lại variance trên validation để đưa PICP từ 97,10 phần trăm về gần 95 phần trăm và giảm sharpness. Nếu cần một benchmark công bằng hơn với Prophet, hãy retrain LSTM trên 80 phần trăm đầu dữ liệu, fit scaler chỉ trên tập train và đánh giá cả hai mô hình trên cùng timestamp. SARIMA chỉ nên thêm khi còn đủ thời gian.")
+    body(doc, "Calibration variance trên validation đã hoàn thành và đưa PICP test từ 97,10 phần trăm về 95,06 phần trăm. Nếu còn thời gian sau demo và slide, nâng cấp tiếp theo nên là dùng một calibration set tách riêng khỏi early stopping hoặc thử calibration riêng cho từng horizon. Nếu cần benchmark công bằng hơn với Prophet, hãy retrain LSTM trên 80 phần trăm đầu dữ liệu, fit scaler chỉ trên tập train và đánh giá cả hai mô hình trên cùng timestamp. SARIMA chỉ nên thêm khi còn đủ thời gian.")
 
     heading(doc, "15 Kết luận", 1)
     body(doc, "Đến thời điểm hiện tại, phần tái lập cốt lõi đã hoàn thành. Chúng ta đã chạy source của paper, dùng dữ liệu OPSD, train lại Encoder Decoder LSTM, tạo checkpoint, đánh giá trên test set, so sánh với hai baseline và chạy Prophet từ notebook benchmark. LSTM có sai số thấp hơn Prophet trong kết quả hiện tại, đồng thời tạo khoảng dự báo hẹp hơn; kết luận này cần đi kèm lưu ý về khác biệt split giữa hai protocol.")
-    body(doc, "Phần còn thiếu để hoàn thành bài giữa kỳ là demo có thể trình bày trực tiếp, slide tối đa 15 trang và rà soát README GitHub. Việc bổ sung mô hình khác hoặc cải thiện calibration chỉ nên thực hiện sau ba hạng mục này.")
+    body(doc, "Ngoài tái lập, bài làm còn có một cải tiến hậu xử lý đã được kiểm tra đúng quy trình validation test: standard deviation scaling hiệu chỉnh khoảng dự báo từ coverage 97,10 về 95,06 phần trăm mà không thay đổi RMSE hay MAE. Phần còn thiếu để hoàn thành bài giữa kỳ là demo có thể trình bày trực tiếp, slide tối đa 15 trang và rà soát README GitHub.")
 
     heading(doc, "Tài liệu tham khảo", 1)
     body(doc, "1. ProLoaF Probabilistic load forecasting for power systems. SoftwareX 2023. DOI 10.1016/j.softx.2023.101487.")
