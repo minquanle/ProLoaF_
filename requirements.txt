@@ -11,6 +11,9 @@ arch==5.3.1
 optuna==2.10.1
 tensorboard==2.11.2
 prophet==1.1.5
+# Prophet 1.1.5 bundles a trimmed CmdStan runtime that is compatible with
+# cmdstanpy 1.2.x; cmdstanpy 1.3.x rejects that bundled runtime on Windows.
+cmdstanpy==1.2.5
 plotly==5.18.0
 ipywidgets==8.1.5
 ipykernel==6.29.5

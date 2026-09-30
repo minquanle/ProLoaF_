@@ -1,0 +1,21 @@
+{
+  "data_file": "C:\\Nam 4\\ProLoaF_\\paper_source\\data\\opsd.csv",
+  "data_sha256": "9a61ed94577f1741b8f60991c46cf5483a4fc0d3470186c5c45193b5217911bb",
+  "config_file": "C:\\Nam 4\\ProLoaF_\\paper_source\\targets\\opsd\\config.json",
+  "config_sha256": "c74810f87c166ab0d86c882e4a4e6279832d2466b47f0436e442a02c9ecbafc6",
+  "lstm_metrics_file": "C:\\Nam 4\\ProLoaF_\\artifacts\\paper_reproduction\\evaluation\\opsd_recurrent.csv",
+  "target": "DE_load_actual_entsoe_transparency",
+  "train_rows": 26294,
+  "validation_rows": 8765,
+  "test_rows": 8765,
+  "test_start": "2018-12-31 19:00:00",
+  "test_end": "2019-12-31 23:00:00",
+  "test_forecast_origins": 8595,
+  "history_horizon_hours": 147,
+  "forecast_horizon_hours": 24,
+  "target_train_min_mw": 31307.0,
+  "target_train_max_mw": 77549.0,
+  "target_train_range_mw": 46242.0,
+  "interval_calibration": "Horizon-specific empirical 2.5% and 97.5% residual quantiles from validation only.",
+  "note": "Baseline point forecasts use only values available at each rolling forecast origin."
+}
