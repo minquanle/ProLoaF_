@@ -19,6 +19,7 @@ import pandas as pd
 import torch
 
 from calibrate_lstm_intervals import (
+    DEFAULT_CHECKPOINT,
     DEFAULT_OUTPUT_DIR,
     DEFAULT_SOURCE_ROOT,
     calculate_metrics,
@@ -29,6 +30,7 @@ from calibrate_lstm_intervals import (
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-root", type=Path, default=DEFAULT_SOURCE_ROOT)
+    parser.add_argument("--checkpoint", type=Path, default=DEFAULT_CHECKPOINT)
     parser.add_argument("--calibration-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     return parser.parse_args()
 
@@ -36,6 +38,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     source_root = args.source_root.resolve()
+    checkpoint = args.checkpoint.resolve()
     calibration_dir = args.calibration_dir.resolve()
     calibration_path = calibration_dir / "selected_calibration.json"
     if not calibration_path.exists():
@@ -48,7 +51,6 @@ def main() -> None:
     selected_c = float(calibration["selected_c"])
 
     source_code = source_root / "src"
-    checkpoint = source_root / "oracles" / "opsd_recurrent.pkl"
     config_path = source_root / "targets" / "opsd" / "config.json"
     data_path = source_root / "data" / "opsd.csv"
     for required_path in (source_code, checkpoint, config_path, data_path):

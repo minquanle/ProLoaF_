@@ -119,13 +119,34 @@ separately from `ProLoaF_legacy_MIS`: the latter preserves the value printed by
 the original source, whose `Mis.from_quantiles` method includes the median when
 selecting alpha and therefore does not score the displayed 95% interval.
 
-## Current status and next work
+## Interactive local demo
+
+The local HTML dashboard lets you select one of the 8,595 test forecast origins. It
+shows the 147 hours of load history, the next 24 actual hours, the LSTM point
+forecast, and both the original and calibrated 95% intervals. It runs inference
+only; it never retrains the checkpoint.
+
+```powershell
+conda activate proloaf-paper-repro
+python .\demo\run_demo.py
+```
+
+Open [http://127.0.0.1:8501](http://127.0.0.1:8501) in a browser. On the first
+page load, the demo prepares all test forecasts in memory; this takes roughly
+10 seconds. Later slider changes are immediate. The interface is built with
+HTML, CSS and JavaScript; the local Python server only exposes model forecasts
+through a small API.
+
+## Current status
 
 Completed: LSTM training and test evaluation, Simple Naive and Seasonal Naive
-baselines, the Prophet notebook reproduction, and the validation-only interval
-calibration extension. The next deliverables are an interactive demonstration and
-presentation slides. GRU is deliberately not treated as the paper model; it may be
-added later as a separate extension with the same data split and metrics.
+baselines, the Prophet notebook reproduction, the validation-only interval
+calibration extension, and the interactive HTML demonstration. GRU is deliberately
+not treated as the paper model; it may be added later as a separate extension with
+the same data split and metrics.
+
+Submission reports and presentation slides are kept as local deliverables and are
+intentionally excluded from this source repository.
 
 See [`reproduction/REPRODUCTION_PROTOCOL.md`](reproduction/REPRODUCTION_PROTOCOL.md)
 and [`reproduction/RUN_CARD.md`](reproduction/RUN_CARD.md) for the full provenance.

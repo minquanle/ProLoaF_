@@ -1,4 +1,4 @@
-"""Calibrate the existing ProLoaF LSTM 95% prediction interval on validation.
+r"""Calibrate the existing ProLoaF LSTM 95% prediction interval on validation.
 
 This is a *post-hoc* experiment for the midterm, not a modification of the
 paper's model or training code.  It deliberately:
@@ -36,9 +36,13 @@ import pandas as pd
 import torch
 
 
-DEFAULT_SOURCE_ROOT = Path(r"C:\Nam 4\ProLoaF-paper-reproduction")
+REPO_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_SOURCE_ROOT = REPO_ROOT / "paper_source"
+DEFAULT_CHECKPOINT = (
+    REPO_ROOT / "artifacts" / "paper_reproduction" / "opsd_recurrent.pkl"
+)
 DEFAULT_OUTPUT_DIR = (
-    Path(__file__).resolve().parents[1]
+    REPO_ROOT
     / "artifacts"
     / "paper_reproduction"
     / "interval_calibration"
@@ -59,6 +63,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR,
         help="Folder receiving calibration-only artifacts.",
+    )
+    parser.add_argument(
+        "--checkpoint",
+        type=Path,
+        default=DEFAULT_CHECKPOINT,
+        help="Path to the trained OPSD LSTM checkpoint.",
     )
     return parser.parse_args()
 
@@ -106,11 +116,11 @@ def metrics_by_horizon(actual: np.ndarray, mean: np.ndarray, sigma: np.ndarray, 
 def main() -> None:
     args = parse_args()
     source_root = args.source_root.resolve()
+    checkpoint = args.checkpoint.resolve()
     output_dir = args.output_dir.resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
     source_code = source_root / "src"
-    checkpoint = source_root / "oracles" / "opsd_recurrent.pkl"
     config_path = source_root / "targets" / "opsd" / "config.json"
     data_path = source_root / "data" / "opsd.csv"
     for required_path in (source_code, checkpoint, config_path, data_path):

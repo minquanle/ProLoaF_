@@ -28,5 +28,11 @@ paper_source/src/proloaf.egg-info/
 
 # Runtime logs, Office lock files and document-rendering QA intermediates.
 eventlog.log
-artifacts/paper_reproduction/report/qa_*/
-artifacts/paper_reproduction/report/~$*
+artifacts/paper_reproduction/demo_*.log
+
+# Submission documents and presentation files are intentionally kept local.
+artifacts/paper_reproduction/report/
+artifacts/paper_reproduction/slides/
+references/
+CONSOLIDATION_REPORT.md
+reproduction/build_*report.py
