@@ -8,6 +8,15 @@
 - `baseline_comparison/`: Simple Naive and Seasonal Naive results.
 - `prophet_paper_protocol/`: Prophet notebook-protocol reproduction results.
 - `interval_calibration/`: validation-only interval calibration and frozen test results.
+- `strict_602020_20261013/`: new checkpoint selected on B only, final C results,
+  complete epoch history and comparison with the old checkpoint. No calibration.
+- `residual_comparison/`: author-method residual histogram and provenance;
+  this still uses the old checkpoint, not the strict-split model.
+
+The first checkpoint used A for gradients and B+C for early stopping. Its C
+results and calibration are not an independent test evaluation. Only the new
+strict-split run excluded C from checkpoint selection. Reports/slides/demo have
+not been automatically switched to the new model.
 
 Submission reports and presentation slides are intentionally excluded from Git.
 

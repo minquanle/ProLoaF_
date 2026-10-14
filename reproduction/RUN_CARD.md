@@ -20,7 +20,9 @@
 ## Data and tensors
 
 - Prepared dataset: 43,824 hourly rows and 55 columns, 2015-01-01 to 2019-12-31.
-- Split configuration: 60% / 20% / 20% train-validation-test.
+- Configured boundaries: 60% and 80%. Actual original train.py behavior:
+  A=60% for gradients, B+C=40% for validation/early stopping. evaluate.py
+  then scores C=last 20%, which is not independent of checkpoint selection.
 - Encoder tensor per sample: 147 historical hours x 5 features.
 - Decoder tensor per sample: 24 future hours x 46 calendar features.
 - Target tensor per sample: 24 future hours x 1 German-load value.
@@ -47,7 +49,15 @@ tensorboard/events.out.tfevents.1790235848.DESKTOP-A0A9J2U.9180.0
 E95B9EACFBE63BF9FFA9A9DA11F85AB9E3A29726269E6B84E5543914A19D3834
 ```
 
-## Not yet complete
+## Subsequent completed stages
 
-No test-set metrics, baseline table or GRU extension is claimed yet. Those are the next
-separate experimental stages.
+Original C evaluation, two Naive baselines, aligned Prophet comparison,
+validation-selected interval calibration and the local demo are complete.
+The original checkpoint's selection used B+C, including the final C region.
+
+A separate strict 60/20/20 run completed on 2026-10-13. It stopped at epoch 22,
+selected epoch 15 on B alone, and scored C after selection: RMSE 3,652.55 MW,
+MAE 2,457.65 MW, PICP 97.1015%, original intervals with c=1. See
+`artifacts/paper_reproduction/strict_602020_20261013/` for exact evidence.
+The demo and original calibration still use the old checkpoint. No GRU result
+or calibration of the new checkpoint is claimed.

@@ -26,7 +26,11 @@ git submodule update --init --recursive
 - Target: German actual electricity load, `DE_load_actual_entsoe_transparency`.
 - History horizon: 147 hours.
 - Forecast horizon: 24 hours.
-- Time split: first 60% train, next 20% validation, last 20% test.
+- Chronological regions: A=first 60%, B=next 20%, C=last 20%.
+  The original train.py uses A for gradients and B+C for early stopping;
+  evaluate.py then scores C. Thus the original C result is not independent.
+  The new run_lstm_strict_602020.py uses only B for early stopping and holds C
+  out until after checkpoint selection.
 - Scaling: MinMax `[0, 1]` for German load and German weather variables, fitted on
   the train data only.
 - Network: recurrent encoder-decoder with a one-layer `torch.nn.LSTM` core.
@@ -37,8 +41,12 @@ git submodule update --init --recursive
 
 ## Expected evaluation protocol
 
-Load `artifacts/paper_reproduction/opsd_recurrent.pkl` and evaluate only on the held-out
-test partition. Report both point and probabilistic quality:
+The original checkpoint is `artifacts/paper_reproduction/opsd_recurrent.pkl`.
+The independently evaluated checkpoint is
+`artifacts/paper_reproduction/strict_602020_20261013/opsd_recurrent.pkl`.
+Keep these separate: old calibration/demo refer to the former, not the latter.
+Both score the same C windows, but only the new run excludes C from selection.
+Report both point and probabilistic quality:
 
 - RMSE and MAE;
 - NLL / NllGauss;

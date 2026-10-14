@@ -36,3 +36,13 @@ artifacts/paper_reproduction/slides/
 references/
 CONSOLIDATION_REPORT.md
 reproduction/build_*report.py
+
+# Strict-split dry runs and runtime-only traces remain local.
+artifacts/paper_reproduction/strict_602020_dryrun_*/
+artifacts/paper_reproduction/strict_*.stdout.log
+artifacts/paper_reproduction/strict_*.stderr.log
+artifacts/paper_reproduction/strict_*/eventlog.log
+artifacts/paper_reproduction/strict_*/runs/
+artifacts/paper_reproduction/strict_*/best_weights.pt
+# Archived slide composites are not technical evidence for the source repository.
+artifacts/paper_reproduction/residual_comparison/paper_vs_local_*.png
