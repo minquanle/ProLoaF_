@@ -46,3 +46,9 @@ artifacts/paper_reproduction/strict_*/runs/
 artifacts/paper_reproduction/strict_*/best_weights.pt
 # Archived slide composites are not technical evidence for the source repository.
 artifacts/paper_reproduction/residual_comparison/paper_vs_local_*.png
+
+# Official DLinear sparse checkout is restored by the setup script, not nested in Git.
+external/LTSF-Linear/
+artifacts/paper_reproduction/dlinear_*.stdout.log
+artifacts/paper_reproduction/dlinear_*.stderr.log
+artifacts/paper_reproduction/dlinear_dryrun_*/
