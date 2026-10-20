@@ -33,6 +33,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output-dir', type=Path, required=True)
     parser.add_argument('--threads', type=int, default=4)
+    parser.add_argument('--seed', type=int, default=1, help='torch seed; 1 reproduces the first strict run.')
     parser.add_argument('--dry-run', action='store_true', help='Validate split and tensors without fitting.')
     args = parser.parse_args()
     out = args.output_dir.resolve()
@@ -54,7 +55,7 @@ def main():
         from calibrate_lstm_intervals import calculate_metrics, metrics_by_horizon
 
         torch.set_num_threads(args.threads)
-        torch.manual_seed(1)
+        torch.manual_seed(args.seed)
         config_file = ROOT / 'artifacts/paper_reproduction/training_config_used.json'
         old_checkpoint = ROOT / 'artifacts/paper_reproduction/opsd_recurrent.pkl'
         source_file = ROOT / 'paper_source/data/opsd.csv'
@@ -73,7 +74,7 @@ def main():
         scale = float(train[target].max() - train[target].min())
         minimum = float(train[target].min())
         meta = {
-            'protocol': 'strict chronological 60/20/20', 'seed': 1,
+            'protocol': 'strict chronological 60/20/20', 'seed': args.seed,
             'source_commit': '1055d1fd3ae00ffce0b67eed03ec84a7410f5da8',
             'data_sha256': fingerprint(source_file), 'old_checkpoint_sha256': fingerprint(old_checkpoint),
             'base_config_sha256': fingerprint(config_file),
