@@ -20,6 +20,17 @@ not been automatically switched to the new model.
 
 Submission reports and presentation slides are intentionally excluded from Git.
 
+The separate `dlinear_opsd_20261015/` extension applies the official DLinear
+architecture to OPSD. It includes three seed checkpoints, predictions, point
+metrics and comparison to the strict LSTM. This is a load-only model without
+prediction intervals, not an equal-input architectural benchmark or a full
+reproduction of the DLinear paper's published experiment.
+
+The strict LSTM was also retrained with seeds 2 and 3
+(`strict_602020_seed2/`, `strict_602020_seed3/`, created with
+`run_lstm_strict_602020.py --seed N`). `strict_602020_3seeds_summary/` holds the
+per-seed table, mean +/- sample std and RMSE by horizon averaged over the seeds.
+
 The artifacts were produced from the paper source at commit
 `1055d1fd3ae00ffce0b67eed03ec84a7410f5da8` on 2026-09-24. Their hashes are recorded
 in `reproduction/RUN_CARD.md`.

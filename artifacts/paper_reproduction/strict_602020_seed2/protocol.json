@@ -1,0 +1,44 @@
+{
+  "protocol": "strict chronological 60/20/20",
+  "seed": 2,
+  "source_commit": "1055d1fd3ae00ffce0b67eed03ec84a7410f5da8",
+  "data_sha256": "9a61ed94577f1741b8f60991c46cf5483a4fc0d3470186c5c45193b5217911bb",
+  "old_checkpoint_sha256": "c1f3446055d34204c6a5f1ee285939108b1d0308e4f1323f85f5fef5350afbc7",
+  "base_config_sha256": "2353402cf24383074526daf1843031b8af90255be97c6d56b91bd4b5e87422fe",
+  "gradient_partition": "A [0,60%)",
+  "selection_partition": "B [60%,80%)",
+  "final_test_partition": "C [80%,100%)",
+  "scaler_fit_partition": "A only",
+  "test_used_for_selection": false,
+  "calibration_applied": false,
+  "target_min_MW": 31307.0,
+  "target_range_MW": 46242.0,
+  "runtime": {
+    "python": "3.9.25 (main, Nov  3 2025, 22:44:01) [MSC v.1929 64 bit (AMD64)]",
+    "torch": "1.13.1+cpu",
+    "device": "cpu",
+    "threads": 4
+  },
+  "runtime_note": "Four CPU threads for resource control; numerical results can differ from an older run with unspecified thread count.",
+  "checkpoint_rule": "Best B loss, including when the 50-epoch cap is reached.",
+  "partitions": {
+    "A": {
+      "rows": 26294,
+      "start": "2015-01-01 00:00:00",
+      "end": "2017-12-31 13:00:00",
+      "windows": 26124
+    },
+    "B": {
+      "rows": 8765,
+      "start": "2017-12-31 14:00:00",
+      "end": "2018-12-31 18:00:00",
+      "windows": 8595
+    },
+    "C": {
+      "rows": 8765,
+      "start": "2018-12-31 19:00:00",
+      "end": "2019-12-31 23:00:00",
+      "windows": 8595
+    }
+  }
+}

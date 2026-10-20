@@ -1,0 +1,68 @@
+{
+  "state": "complete",
+  "started_utc": "2026-10-15T07:29:36.930608+00:00",
+  "seed": 3,
+  "epoch": 19,
+  "best_epoch": 12,
+  "best_validation_mse": 0.005979311094049199,
+  "finished_utc": "2026-10-15T07:30:34.772693+00:00",
+  "total_wall_seconds": 57.832869200000005,
+  "results": [
+    {
+      "model": "DLinear_univariate",
+      "seed": 1,
+      "best_epoch": 16,
+      "epochs": 23,
+      "best_validation_mse": 0.005867183404951704,
+      "train_wall_seconds": 21.0941178,
+      "checkpoint_sha256": "137d9702b358b2a2af7a00a7e1a7218f9c7f7c7188689e5b256fb83556631db9",
+      "RMSE_MW": 3549.4815516220733,
+      "MAE_MW": 2392.6336553594283,
+      "Bias_actual_minus_predicted_MW": -99.0162680614395,
+      "parameter_count": 7104,
+      "inference_C_seconds": 0.07216650000000158
+    },
+    {
+      "model": "DLinear_univariate",
+      "seed": 2,
+      "best_epoch": 18,
+      "epochs": 25,
+      "best_validation_mse": 0.006000344781466919,
+      "train_wall_seconds": 20.600670700000002,
+      "checkpoint_sha256": "fdeae2c9e84cb33ada43147b91f1d447104d6e506b02933cf4936a0c098cb006",
+      "RMSE_MW": 3586.937419950646,
+      "MAE_MW": 2462.0278692505926,
+      "Bias_actual_minus_predicted_MW": 64.83474933752696,
+      "parameter_count": 7104,
+      "inference_C_seconds": 0.09872119999999995
+    },
+    {
+      "model": "DLinear_univariate",
+      "seed": 3,
+      "best_epoch": 12,
+      "epochs": 19,
+      "best_validation_mse": 0.005979311094049199,
+      "train_wall_seconds": 15.3308489,
+      "checkpoint_sha256": "c8a0d2f57214b80dfa667e9ef5797b73c468ab658fd2db2232717ecad464642b",
+      "RMSE_MW": 3573.580849724704,
+      "MAE_MW": 2444.4735991463676,
+      "Bias_actual_minus_predicted_MW": -12.672615588826972,
+      "parameter_count": 7104,
+      "inference_C_seconds": 0.08494579999999985
+    }
+  ],
+  "aggregate": {
+    "RMSE_MW": {
+      "mean": 3569.999940432474,
+      "sample_std": 18.982958188365316
+    },
+    "MAE_MW": {
+      "mean": 2433.0450412521295,
+      "sample_std": 36.08113332546014
+    },
+    "train_wall_seconds": {
+      "mean": 19.0085458,
+      "sample_std": 3.194520836733862
+    }
+  }
+}
