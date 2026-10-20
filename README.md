@@ -165,6 +165,28 @@ also saved. Source figure credit and limitations are recorded in
 [`residual_comparison/README.md`](artifacts/paper_reproduction/residual_comparison/README.md).
 Matching plot style does not establish reproduction of the exact published data.
 
+## DLinear cross-paper extension (2026-10-15)
+
+The unchanged official DLinear architecture from *Are Transformers Effective
+for Time Series Forecasting?* (AAAI 2023) has now been trained on the OPSD task.
+This adapts the method to this dataset, not reproduces the original paper's
+benchmark. Source commit, setup and training commands are in
+[`reproduction/DLINEAR_PROTOCOL.md`](reproduction/DLINEAR_PROTOCOL.md).
+
+Three load-only DLinear seeds use the strict 60/20/20 boundaries, 147 -> 24
+windows and train-only scaling. Mean RMSE is 3,570.00 MW (sample std 18.98),
+mean MAE 2,433.05 MW (sample std 36.08). The multivariate strict LSTM was
+retrained with seeds 1, 2 and 3 (2026-10-20): mean RMSE 3,354.73 MW (sample
+std 263.53) and mean MAE 2,206.25 MW (sample std 217.77), i.e. about 6% lower
+RMSE than DLinear, while DLinear is better for horizons 1-6 and far more stable
+across seeds. Per-seed results are in
+[`strict_602020_3seeds_summary`](artifacts/paper_reproduction/strict_602020_3seeds_summary/)
+(built by `reproduction/aggregate_lstm_seeds.py`). Inputs and losses differ, so
+this does not isolate architecture quality or prove statistical significance.
+All results and validation evidence are in
+[`dlinear_opsd_20261015`](artifacts/paper_reproduction/dlinear_opsd_20261015/).
+No prediction intervals have been added to DLinear. The demo is unchanged.
+
 ## Interactive local demo
 
 The local HTML dashboard lets you select one of the 8,595 test forecast origins. It
