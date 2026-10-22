@@ -52,5 +52,10 @@ conda activate proloaf-paper-repro
 python .\reproduction\run_lstm_strict_602020.py --output-dir .\artifacts\paper_reproduction\strict_602020_new_run --threads 4
 ```
 
-Console logs for the current background run are located one directory above,
-as `strict_602020_20261013.stdout.log` and `strict_602020_20261013.stderr.log`.
+Add `--seed N` to train another seed. This folder is seed 1. Seeds 2 and 3
+were trained with the same command in `../strict_602020_seed2/` and
+`../strict_602020_seed3/`. The three-seed summary is in
+`../strict_602020_3seeds_summary/`.
+
+`best_weights.pt` and the console logs are local runtime files and are not
+committed. `opsd_recurrent.pkl` contains the same selected weights.

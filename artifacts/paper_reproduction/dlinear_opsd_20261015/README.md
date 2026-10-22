@@ -16,10 +16,20 @@ The official DLinear model file was not changed. Source commit:
 - Seasonal Naive 24: RMSE 6,932.13 MW, MAE 4,541.11 MW.
 - Simple Naive: RMSE 11,120.70 MW, MAE 8,777.72 MW.
 
-DLinear mean RMSE is about 2.26% lower and mean MAE about 1.00% lower than
-the existing strict LSTM run. Do not select/report only the best C seed: all
-three are retained, and seed 2's MAE is slightly higher than the LSTM's.
-This is not evidence of universal superiority or statistical significance.
+When this run was made, only strict LSTM seed 1 existed. Against that single
+run, DLinear's mean RMSE was about 2.26% lower and its mean MAE about 1.00% lower.
+
+**Update 2026-10-20:** the strict LSTM was retrained with seeds 2 and 3
+(`../strict_602020_3seeds_summary/`). Its three-seed mean is RMSE 3,354.73 ±
+263.53 MW and MAE 2,206.25 ± 217.77 MW. Against that mean, the LSTM's RMSE is
+about 6% lower than DLinear's and its MAE about 9% lower. The comparison
+depends on the horizon: DLinear is more accurate at horizons 1–6, the LSTM at
+horizons 7–24.
+
+The gap is smaller than the LSTM's spread across seeds, and LSTM seed 1 is
+worse than every DLinear seed. All seeds are reported; none was selected on C.
+This is not evidence of superiority or statistical significance in either
+direction.
 
 ## Protocol and caveats
 
@@ -53,4 +63,4 @@ prediction archive per seed, `test_summary_per_seed.csv`,
 `test_metrics_by_horizon.csv`, `comparison_point_metrics.csv`,
 `aggregate_three_seeds.json`, and `status.json`. Checkpoints store state_dict,
 seed, best epoch and protocol. Raw code/data and previous model artifacts remain
-unchanged. The report, slides, demo and GitHub have not been updated by this run.
+unchanged. The demo does not include DLinear.

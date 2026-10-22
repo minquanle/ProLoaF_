@@ -1,40 +1,117 @@
 # ProLoaF paper reproduction
 
-This repository records a local reproduction of the OPSD illustrative experiment from
-**“ProLoaF: Probabilistic load forecasting for power systems”**. The goal is to run the
-paper's code and configuration before adding any independent extension.
+This repository reproduces the OPSD example from **"ProLoaF: Probabilistic load
+forecasting for power systems"** (Gürses-Tran, Oppermann and Monti, SoftwareX 23,
+101487, 2023). It then extends that example.
 
-## What has been reproduced
+**Task.** The model reads the previous 147 hours and forecasts the German
+electricity load for each of the next 24 hours. Each forecast hour gets:
 
-- Official paper source is pinned as the `paper_source` Git submodule at commit
-  `1055d1fd3ae00ffce0b67eed03ec84a7410f5da8`.
-- Dataset: the paper's prepared `data/opsd.csv` from its nested data submodule,
-  with 43,824 hourly observations from 2015-01-01 through 2019-12-31.
-- Target: `DE_load_actual_entsoe_transparency`.
-- Model: one-layer probabilistic encoder-decoder LSTM.
-- Input/output: 147 hours of history -> 24 hours ahead.
-- Training finished on 2026-09-24 with early stopping at epoch 41; the best weights
-  were saved from epoch 34.
+- a point forecast μ,
+- a standard deviation σ,
+- a nominal 95% interval μ ± 1.96σ.
 
-The checkpoint, training log and TensorBoard event file are versioned in
-[`artifacts/paper_reproduction/`](artifacts/paper_reproduction/).
+The work has four parts:
+
+1. **Reproduction.** Train the paper's encoder–decoder LSTM with the authors'
+   code, configuration and data.
+2. **Strict re-evaluation.** The upstream training code uses the final 2019
+   test year for checkpoint selection. A corrected 60/20/20 run removes that
+   overlap. It was trained with three seeds.
+3. **Comparisons.** Simple Naive, Seasonal Naive, Prophet (following the
+   authors' notebook) and DLinear (Zeng et al., AAAI 2023) on the same test
+   year.
+4. **Interval calibration and demo.** A single σ multiplier is chosen on the
+   validation year. A local HTML dashboard shows the forecasts.
+
+## Main results
+
+All rows are scored on the same final 20% of the data (2019, part C):
+8,595 forecast origins × 24 hours = 206,280 forecast–actual pairs. Values are
+in MW, except PICP in %. "Width" is the mean width of the 95% interval.
+
+| Method | RMSE | MAE | PICP | Width | MIS |
+|---|---:|---:|---:|---:|---:|
+| **Not tuned on 2019** | | | | | |
+| Simple Naive | 11,120.70 | 8,777.72 | 95.82 | 38,565.64 | 41,235.87 |
+| Seasonal Naive (24 h) | 6,932.13 | 4,541.11 | 94.92 | 31,732.90 | 35,700.18 |
+| Prophet (notebook protocol, aligned) | 3,946.47 | 2,898.35 | 95.40 | 15,639.61 | 22,212.29 |
+| **Strict LSTM, mean of seeds 1–3** | **3,354.73** | **2,206.25** | 97.23 | 14,010.54 | 17,734.96 |
+| ± sample std across seeds | ± 263.53 | ± 217.77 | ± 0.93 | ± 1,971.19 | ± 1,375.47 |
+| DLinear, mean of seeds 1–3 | 3,570.00 | 2,433.05 | – | – | – |
+| ± sample std across seeds | ± 18.98 | ± 36.08 | | | |
+| **2019 used for checkpoint selection (reference only)** | | | | | |
+| Original-code LSTM | 3,262.64 | 2,117.27 | 97.10 | 12,416.27 | 16,395.35 |
+| Original-code LSTM + calibration (c = 0.841887) | 3,262.64 | 2,117.27 | 95.06 | 10,453.10 | 16,308.16 |
+
+How to read the table:
+
+- **LSTM vs. Prophet and the naive baselines.** On average the strict LSTM has
+  about 52% lower RMSE than Seasonal Naive and about 15% lower than Prophet.
+- **LSTM vs. DLinear.** The LSTM's mean RMSE is about 6% lower than DLinear's.
+  - That gap (about 215 MW) is smaller than the LSTM's spread across seeds.
+  - Seed 1 alone is worse than every DLinear seed.
+  - DLinear is more accurate for horizons 1–6, and the LSTM for horizons 7–24.
+  - The LSTM's error at horizon 1 is unusually high in all three seeds.
+- **Inputs differ.** The LSTM also sees Austrian load, weather and calendar
+  features. DLinear sees only German load history. The comparison therefore
+  does not isolate architecture quality.
+- **Prophet is indicative.** It is fitted once on the first 80% and forecasts
+  2019 in one continuous run, without hourly updates.
+- **Calibration.** It narrows the interval by 15.81% and brings coverage to
+  95.06%, without changing the point forecasts. It was applied to the
+  original-code checkpoint, so it illustrates the method. It is not an
+  independent test result.
 
 ## Repository layout
 
 ```text
 ProLoaF_/
-├── paper_source/                 # official source, pinned as a Git submodule
-├── artifacts/paper_reproduction/ # checkpoint and training evidence from this run
-├── reproduction/                 # protocol and exact run record
-├── data/README.md                # data provenance; raw files are not duplicated here
-├── notebooks/README.md           # points to original notebooks in paper_source
-└── requirements.txt              # pinned Python dependencies for this reproduction
+├── paper_source/                  # official ProLoaF source, Git submodule pinned at 1055d1f
+├── reproduction/                  # runners, verifiers and protocol notes
+├── artifacts/paper_reproduction/  # checkpoints, predictions, metrics and logs of every run
+├── demo/                          # local HTML dashboard (server.py + static/)
+├── data/README.md                 # data provenance; the dataset comes from the submodule
+├── notebooks/README.md            # points to the original notebooks in paper_source
+└── requirements.txt               # pinned Python environment (Windows, CPU)
 ```
 
-## Clone and set up
+| Script in `reproduction/` | Purpose |
+|---|---|
+| `run_lstm_strict_602020.py` | Strict 60/20/20 LSTM run (`--seed`, `--threads`, `--dry-run`) |
+| `aggregate_lstm_seeds.py` | Per-seed table, mean ± std and RMSE by horizon for the three strict seeds |
+| `run_two_baselines.py` | Simple and Seasonal Naive with validation-based intervals |
+| `run_prophet_paper_protocol.py` | Prophet as in the authors' benchmark notebook |
+| `calibrate_lstm_intervals.py` | Choose the σ multiplier c on the validation year only |
+| `evaluate_calibrated_lstm_on_test.py` | Apply the frozen c to the test year |
+| `plot_residual_comparison.py` | Redraw Fig. 3 of the paper (residual histogram) |
+| `setup_dlinear_source.ps1` | Fetch the official DLinear source at the pinned commit |
+| `run_dlinear_opsd.py` / `verify_dlinear_opsd.py` | Train and independently verify DLinear |
 
-Clone recursively so that both the paper source and its original data submodule are
-available:
+## Data and split
+
+The dataset is the authors' prepared table `paper_source/data/opsd.csv`. It has
+43,824 hourly rows covering 2015-01-01 to 2019-12-31, with no missing values.
+See [`data/README.md`](data/README.md).
+
+The data is split in chronological order:
+
+| Part | Share | Hours | Windows (147 + 24) | Role |
+|---|---|---:|---:|---|
+| A | 0–60% | 26,294 | 26,124 | Training (gradients and scaler fit) |
+| B | 60–80% | 8,765 | 8,595 | Checkpoint selection, calibration |
+| C | 80–100% | 8,765 | 8,595 | Final test only |
+
+The configuration lists both 0.6 and 0.8, but the pinned `src/train.py` only
+splits at `train_split = 0.6`. As a result, B and C together decide early
+stopping, and C is later used for testing. This applies to the original-code
+checkpoint. The strict runner keeps everything else unchanged and lets only B
+select the checkpoint.
+
+## Setup
+
+Clone recursively, so that both the paper source and its nested data submodule
+are fetched:
 
 ```powershell
 git clone --recurse-submodules https://github.com/minquanle/ProLoaF_.git
@@ -43,178 +120,161 @@ conda create -n proloaf-paper-repro python=3.9 -y
 conda activate proloaf-paper-repro
 python -m pip install --no-cache-dir -r requirements.txt
 python -m pip install --no-deps -e .\paper_source
+```
+
+To use the original notebooks, also register the kernel:
+
+```powershell
 python -m ipykernel install --user --name proloaf-paper-repro --display-name "Python (ProLoaF Paper Reproduction)"
 ```
 
-## Re-run training
+All commands below run from the repository root, in the
+`proloaf-paper-repro` environment.
+
+## Reproducing the results
+
+The finished outputs of every step are already committed under
+`artifacts/paper_reproduction/`. Re-running is only needed to check them.
+Training runners refuse to write into an existing output directory, so give
+them a new one.
+
+**1. Original-code LSTM.** This uses the upstream code unchanged, with
+`torch.manual_seed(1)`, Gaussian NLL loss and early-stopping patience 7.
+Early stopping happened at epoch 41, and the weights from epoch 34 were kept.
 
 ```powershell
-conda activate proloaf-paper-repro
 cd paper_source
 python .\src\train.py -s opsd
+cd ..
 ```
 
-The original code sets `torch.manual_seed(1)`. It uses the default Gaussian negative
-log-likelihood loss (`NllGauss`) and early stopping with patience 7.
-
-## Prophet benchmark from the paper notebook
-
-The executable implementation of the Prophet section in the original
-`Train and Benchmark Models.ipynb` is
-[`reproduction/run_prophet_paper_protocol.py`](reproduction/run_prophet_paper_protocol.py).
-It fits **one** Prophet model on the first 80% of OPSD and produces a continuous
-hourly forecast, as in the notebook. Run it from the repository root:
+**2. Strict LSTM, three seeds.** Seed 1 took about 27 minutes on four CPU
+threads.
 
 ```powershell
-conda activate proloaf-paper-repro
+python .\reproduction\run_lstm_strict_602020.py --output-dir .\artifacts\paper_reproduction\strict_new_seed1 --seed 1 --threads 4
+python .\reproduction\run_lstm_strict_602020.py --output-dir .\artifacts\paper_reproduction\strict_new_seed2 --seed 2 --threads 4
+python .\reproduction\run_lstm_strict_602020.py --output-dir .\artifacts\paper_reproduction\strict_new_seed3 --seed 3 --threads 4
+python .\reproduction\aggregate_lstm_seeds.py
+```
+
+Add `--dry-run` to check the split and tensor shapes without training.
+`aggregate_lstm_seeds.py` reads the committed folders `strict_602020_20261013`,
+`strict_602020_seed2` and `strict_602020_seed3`.
+
+**3. Baselines and Prophet.**
+
+```powershell
+python .\reproduction\run_two_baselines.py
 python .\reproduction\run_prophet_paper_protocol.py
 ```
 
-Outputs are written to `artifacts/paper_reproduction/prophet_paper_protocol/`.
-The runner exports two labels on purpose:
+The Prophet runner writes two variants:
 
-- `paper_literal_80pct`: literal notebook behavior, including Prophet's default
-  80% interval and its 147-hour timestamp offset. It is source-fidelity evidence,
-  not a valid LSTM comparison.
-- `chronological_aligned_95pct`: the same single fitted Prophet model, with forecast
-  and actual timestamps aligned and a 95% interval. This is the result appropriate
-  for an indicative comparison to the LSTM.
+- `paper_literal_80pct` keeps the notebook's default 80% interval and its
+  147-hour timestamp offset. It is evidence of source fidelity only.
+- `chronological_aligned_95pct` aligns forecasts with actuals and uses a 95%
+  interval. This is the variant used in the table above.
 
-The comparison remains indicative rather than strictly fair: Prophet's notebook
-uses an 80/20 fit/test split and full-data target scaling, while the existing LSTM
-checkpoint used 60% for gradients and the remaining 40% (B+C) for checkpoint
-selection, with training-only scaling. Its final C evaluation is not independent
-of early stopping.
-
-## Post-hoc interval calibration extension
-
-The paper-reproduction LSTM outputs both a point forecast (the Gaussian mean
-`mu`) and an uncertainty estimate (`sigma`). The original 95% interval on the
-final C evaluation had empirical coverage of 97.10%, so it was slightly too wide.
-This repository adds a clearly separated post-hoc extension: standard-deviation
-scaling. It does **not** retrain or alter the LSTM point forecast.
-
-First choose a multiplier only on the validation period (the original OPSD rows
-60% to 80%):
+**4. Interval calibration.** This runs on the original-code checkpoint.
 
 ```powershell
-conda activate proloaf-paper-repro
 python .\reproduction\calibrate_lstm_intervals.py
-```
-
-Then evaluate that frozen multiplier exactly as selected on the final C
-period (80% to 100%):
-
-```powershell
 python .\reproduction\evaluate_calibrated_lstm_on_test.py
 ```
 
-For this run, validation selected `c = 0.841887`. On test, PICP changed from
-97.10% to **95.06%**, while Sharpness decreased from 0.268506 to **0.226052**.
-RMSE and MAE stay unchanged because calibration only rescales the interval around
-the same point forecast. Results, the full coefficient sweep and the validation
-trade-off figure are in
-[`artifacts/paper_reproduction/interval_calibration/`](artifacts/paper_reproduction/interval_calibration/).
+The calibration works in three steps:
 
-`MIS_standard_95` is the standard alpha=0.05 mean interval score. It is reported
-separately from `ProLoaF_legacy_MIS`: the latter preserves the value printed by
-the original source, whose `Mis.from_quantiles` method includes the median when
-selecting alpha and therefore does not score the displayed 95% interval.
+1. On B, compute r = |y − μ| / (1.96σ) for every forecast–actual pair.
+2. Take c as the empirical 95th percentile of r.
+3. Freeze c and apply it unchanged to C.
 
-Calibration only selects c on B, but the old checkpoint was already selected
-using B+C. This does not retroactively make C an independent test set.
-
-## Strict 60/20/20 experiment (2026-10-13)
-
-The separate runner fixes the split without editing the upstream submodule or
-overwriting the old checkpoint. A contains 26,294 hours, B 8,765, and C 8,765.
-Only A fits the scaler and updates weights; only B selects the checkpoint.
-The selected checkpoint is frozen before C evaluation. Run from the repository root:
-
-```powershell
-conda activate proloaf-paper-repro
-python .\reproduction\run_lstm_strict_602020.py --output-dir .\artifacts\paper_reproduction\strict_602020_new_run --threads 4
-```
-
-The output directory must be new. The completed run is in
-[`strict_602020_20261013`](artifacts/paper_reproduction/strict_602020_20261013/).
-Training stopped at epoch 22 and selected epoch 15. Including evaluation, the run
-took about 27 minutes 33 seconds. On the same 8,595 C windows, original intervals
-(c=1) give RMSE 3,652.55 MW, MAE 2,457.65 MW, PICP 97.1015%, and mean interval
-width 15,927.92 MW. The old original-interval result had RMSE 3,262.64 MW and
-MAE 2,117.27 MW. Fixing test independence does not guarantee lower error.
-
-The architecture, seed, optimizer and training hyperparameters are preserved.
-Four CPU threads are explicitly used; the old thread count is unknown, so the
-difference cannot be attributed solely to the split from one run per protocol.
-The old c=0.841887 has not been applied to the new checkpoint. The demo continues
-to use the old checkpoint and calibration, not the new experiment.
-
-## Auditable residual histogram comparison
+**5. Residual histogram (Fig. 3 of the paper).**
 
 ```powershell
 python .\reproduction\plot_residual_comparison.py
 ```
 
-This uses the old checkpoint and saved aligned Prophet forecasts. Following the
-author notebook, each origin contributes the signed mean residual of its 24
-hours: 8,595 values per model, with 80 automatically selected bins per model.
-The author-style view retains all data but zooms the horizontal axis; 169 LSTM
-and 165 Prophet residuals are outside the visible frame. A full-range figure is
-also saved. Source figure credit and limitations are recorded in
-[`residual_comparison/README.md`](artifacts/paper_reproduction/residual_comparison/README.md).
-Matching plot style does not establish reproduction of the exact published data.
-
-## DLinear cross-paper extension (2026-10-15)
-
-The unchanged official DLinear architecture from *Are Transformers Effective
-for Time Series Forecasting?* (AAAI 2023) has now been trained on the OPSD task.
-This adapts the method to this dataset, not reproduces the original paper's
-benchmark. Source commit, setup and training commands are in
-[`reproduction/DLINEAR_PROTOCOL.md`](reproduction/DLINEAR_PROTOCOL.md).
-
-Three load-only DLinear seeds use the strict 60/20/20 boundaries, 147 -> 24
-windows and train-only scaling. Mean RMSE is 3,570.00 MW (sample std 18.98),
-mean MAE 2,433.05 MW (sample std 36.08). The multivariate strict LSTM was
-retrained with seeds 1, 2 and 3 (2026-10-20): mean RMSE 3,354.73 MW (sample
-std 263.53) and mean MAE 2,206.25 MW (sample std 217.77), i.e. about 6% lower
-RMSE than DLinear, while DLinear is better for horizons 1-6 and far more stable
-across seeds. Per-seed results are in
-[`strict_602020_3seeds_summary`](artifacts/paper_reproduction/strict_602020_3seeds_summary/)
-(built by `reproduction/aggregate_lstm_seeds.py`). Inputs and losses differ, so
-this does not isolate architecture quality or prove statistical significance.
-All results and validation evidence are in
-[`dlinear_opsd_20261015`](artifacts/paper_reproduction/dlinear_opsd_20261015/).
-No prediction intervals have been added to DLinear. The demo is unchanged.
-
-## Interactive local demo
-
-The local HTML dashboard lets you select one of the 8,595 test forecast origins. It
-shows the 147 hours of load history, the next 24 actual hours, the LSTM point
-forecast, and both the original and calibrated 95% intervals. It runs inference
-only; it never retrains the checkpoint.
+**6. DLinear.**
 
 ```powershell
-conda activate proloaf-paper-repro
+powershell -ExecutionPolicy Bypass -File .\reproduction\setup_dlinear_source.ps1
+python .\reproduction\run_dlinear_opsd.py --output-dir .\artifacts\paper_reproduction\dlinear_new_run
+python .\reproduction\verify_dlinear_opsd.py --run-dir .\artifacts\paper_reproduction\dlinear_new_run
+```
+
+The full protocol is in
+[`reproduction/DLINEAR_PROTOCOL.md`](reproduction/DLINEAR_PROTOCOL.md).
+
+**7. Demo.**
+
+```powershell
 python .\demo\run_demo.py
 ```
 
-Open [http://127.0.0.1:8501](http://127.0.0.1:8501) in a browser. On the first
-page load, the demo prepares all test forecasts in memory; this takes roughly
-10 seconds. Later slider changes are immediate. The interface is built with
-HTML, CSS and JavaScript; the local Python server only exposes model forecasts
-through a small API.
+Then open <http://127.0.0.1:8501>. The dashboard replays the 8,595 test origins
+of 2019. It shows the 147-hour history, the next 24 actual hours, the LSTM
+forecast, and both the original and the calibrated 95% intervals.
 
-## Current status
+The first page load prepares all forecasts, which takes about 10 seconds. The
+demo only runs inference. It uses the original-code checkpoint and c =
+0.841887, not the strict LSTM.
 
-Completed: LSTM training and test evaluation, Simple Naive and Seasonal Naive
-baselines, the Prophet notebook reproduction, the validation-only interval
-calibration extension, and the interactive HTML demonstration. GRU is deliberately
-not treated as the paper model; it may be added later as a separate extension with
-the same data split and metrics.
+## Metrics
 
-Submission reports and presentation slides are kept as local deliverables and are
-intentionally excluded from this source repository.
+- **RMSE and MAE** measure point-forecast error.
+- **PICP** is the share of actual values inside the interval.
+- **Width** is the mean interval width (called Sharpness in ProLoaF).
+- **MIS** is the standard mean interval score for α = 0.05: the interval width
+  plus 40 × the distance by which an actual value falls outside the interval.
 
-See [`reproduction/REPRODUCTION_PROTOCOL.md`](reproduction/REPRODUCTION_PROTOCOL.md)
-and [`reproduction/RUN_CARD.md`](reproduction/RUN_CARD.md) for the full provenance.
+The upstream `Mis.from_quantiles` includes the median when selecting α. It
+therefore does not score the displayed 95% interval. Its value is kept
+separately as `ProLoaF_legacy_MIS` and is not used in the table above.
+
+## Limitations
+
+- Three seeds are few, given how much the LSTM varies across them. The
+  LSTM–DLinear gap is not statistically established.
+- The interval calibration, the residual histogram and the demo still use the
+  original-code checkpoint.
+- Austrian load is not scaled by the upstream configuration, so it enters the
+  network in raw MW (about 7,000). This is kept as in the source. It may relate
+  to the high horizon-1 error, but this has not been tested.
+- The paper reports no RMSE, MAE or PICP table. Only Fig. 3 (residual
+  histogram) can be compared, and the redrawn figure does not match it
+  exactly.
+- GRU and other ProLoaF model types were not trained.
+
+## Not included in this repository
+
+- The submission report and presentation slides are kept as local
+  deliverables.
+- The raw OPSD download and earlier exploratory notebooks are not included.
+  The experiments use only `paper_source/data/opsd.csv`.
+- The DLinear source checkout (`external/LTSF-Linear/`) is not included.
+  `setup_dlinear_source.ps1` restores it at commit `0c11366`.
+- Runtime-only files are not included: TensorBoard runs of the strict
+  experiments, per-run `best_weights.pt` copies and console logs. Every
+  committed `opsd_recurrent.pkl` contains the selected weights.
+
+## Provenance
+
+[`reproduction/REPRODUCTION_PROTOCOL.md`](reproduction/REPRODUCTION_PROTOCOL.md)
+and [`reproduction/RUN_CARD.md`](reproduction/RUN_CARD.md) record source
+commits, environment and file hashes.
+[`artifacts/paper_reproduction/README.md`](artifacts/paper_reproduction/README.md)
+describes each result folder.
+
+## References
+
+- G. Gürses-Tran, F. Oppermann, A. Monti. *ProLoaF: Probabilistic load
+  forecasting for power systems.* SoftwareX 23 (2023) 101487.
+  <https://doi.org/10.1016/j.softx.2023.101487>
+- Source code: <https://github.com/ElsevierSoftwareX/SOFTX-D-21-00190>
+  (commit `1055d1fd3ae00ffce0b67eed03ec84a7410f5da8`).
+- A. Zeng, M. Chen, L. Zhang, Q. Xu. *Are Transformers Effective for Time
+  Series Forecasting?* AAAI 2023. <https://doi.org/10.1609/aaai.v37i9.26317>;
+  code <https://github.com/cure-lab/LTSF-Linear> (commit `0c11366`).
+- Open Power System Data, Time Series 2020-10-06 and Weather Data 2020-09-16.
+  <https://data.open-power-system-data.org/>
