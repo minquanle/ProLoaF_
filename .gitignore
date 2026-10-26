@@ -52,3 +52,6 @@ external/LTSF-Linear/
 artifacts/paper_reproduction/dlinear_*.stdout.log
 artifacts/paper_reproduction/dlinear_*.stderr.log
 artifacts/paper_reproduction/dlinear_dryrun_*/
+
+# Separate stderr captures of background seed runs.
+artifacts/paper_reproduction/strict_*.log.err

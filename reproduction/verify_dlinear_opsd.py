@@ -37,7 +37,7 @@ def main():
     lstm_root = ROOT/'artifacts/paper_reproduction/strict_602020_20261013'
     lstm = np.load(lstm_root/'test_predictions.npz')
     assert lstm['checkpoint_sha256'].item() == hashlib.sha256((lstm_root/'opsd_recurrent.pkl').read_bytes()).hexdigest()
-    for seed in [1,2,3]:
+    for seed in summary['seed'].astype(int).tolist():
         saved = np.load(out/f'test_predictions_seed{seed}.npz')
         row = summary[summary['seed']==seed].iloc[0]
         checkpoint = out/f'dlinear_seed{seed}.pt'

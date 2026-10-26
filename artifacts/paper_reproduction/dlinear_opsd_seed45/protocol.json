@@ -1,0 +1,53 @@
+{
+  "seeds": [
+    4,
+    5
+  ],
+  "history": 147,
+  "horizon": 24,
+  "batch_size": 32,
+  "learning_rate": 0.001,
+  "lr_schedule": "fixed",
+  "max_epochs": 50,
+  "patience": 7,
+  "loss": "MSE",
+  "optimizer": "Adam",
+  "target": "DE_load_actual_entsoe_transparency",
+  "input_features": [
+    "DE_load_actual_entsoe_transparency"
+  ],
+  "future_covariates": false,
+  "individual": false,
+  "decomposition_kernel": 25,
+  "scaler_fit": "A only",
+  "selection": "B MSE only",
+  "test_used_for_selection": false,
+  "batching": "train shuffle=True; all loaders drop_last=False; validation/test ordered",
+  "source_repository": "https://github.com/cure-lab/LTSF-Linear",
+  "source_commit": "0c113668a3b88c4c4ee586b8c5ec3e539c4de5a6",
+  "source_model_sha256": "190859fc67db235cdd9c27c7590776f402b59e7b67804b52ee2757715f7fc9e3",
+  "paper_doi": "10.1609/aaai.v37i9.26317",
+  "scope": "Official architecture on OPSD; adapter training protocol, not original-paper benchmark.",
+  "comparison_limit": "ProLoaF has additional covariates and a different training loss. Not architecture-only comparison.",
+  "test_history": "C has been inspected in prior project experiments. No new hyperparameter choice is based on C here.",
+  "runtime": {
+    "python": "3.9.25 (main, Nov  3 2025, 22:44:01) [MSC v.1929 64 bit (AMD64)]",
+    "torch": "1.13.1+cpu",
+    "numpy": "1.23.5",
+    "pandas": "1.5.3",
+    "device": "cpu",
+    "threads": 4
+  },
+  "data_sha256": "9a61ed94577f1741b8f60991c46cf5483a4fc0d3470186c5c45193b5217911bb",
+  "target_min_MW": 31307.0,
+  "target_range_MW": 46242.0,
+  "partitions": {
+    "A_rows": 26294,
+    "B_rows": 8765,
+    "C_rows": 8765,
+    "A_windows": 26124,
+    "B_windows": 8595,
+    "C_windows": 8595
+  },
+  "parameter_count": 7104
+}

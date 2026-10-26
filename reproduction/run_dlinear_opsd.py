@@ -54,6 +54,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output-dir', type=Path, required=True)
     parser.add_argument('--dry-run', action='store_true')
+    parser.add_argument('--seeds', default='1,2,3',
+                        help='comma-separated torch seeds; each seed is trained independently.')
     args = parser.parse_args()
     out = args.output_dir.resolve()
     out.mkdir(parents=True, exist_ok=False)
@@ -71,7 +73,7 @@ def main():
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         model_config = SimpleNamespace(seq_len=147, pred_len=24, enc_in=1, individual=False)
-        config = {'seeds':[1,2,3], 'history':147, 'horizon':24, 'batch_size':32,
+        config = {'seeds':[int(s) for s in args.seeds.split(',')], 'history':147, 'horizon':24, 'batch_size':32,
                   'learning_rate':0.001, 'lr_schedule':'fixed', 'max_epochs':50, 'patience':7,
                   'loss':'MSE', 'optimizer':'Adam', 'target':'DE_load_actual_entsoe_transparency',
                   'input_features':['DE_load_actual_entsoe_transparency'], 'future_covariates':False,
@@ -197,12 +199,12 @@ def main():
         pd.DataFrame(comparisons).to_csv(out/'comparison_point_metrics.csv',index=False)
         aggregate={k:{'mean':float(summary[k].mean()),'sample_std':float(summary[k].std(ddof=1))}
                    for k in ['RMSE_MW','MAE_MW','train_wall_seconds']}
-        save_json(out/'aggregate_three_seeds.json',aggregate)
+        save_json(out/('aggregate_three_seeds.json' if config['seeds']==[1,2,3] else 'aggregate_seeds.json'),aggregate)
         status.update(state='complete',finished_utc=datetime.now(timezone.utc).isoformat(),
                       total_wall_seconds=time.perf_counter()-started,results=rows,aggregate=aggregate)
         save_json(out/'status.json',status)
         print(pd.DataFrame(comparisons).to_string(index=False),flush=True)
-        print('Three-seed mean/std: '+json.dumps(aggregate),flush=True)
+        print('Seed mean/std: '+json.dumps(aggregate),flush=True)
     except BaseException:
         status.update(state='failed',error=traceback.format_exc());save_json(out/'status.json',status)
         raise

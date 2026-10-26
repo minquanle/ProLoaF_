@@ -7,11 +7,11 @@ Dự án chạy lại ví dụ trong bài báo *ProLoaF: Probabilistic load fore
 ## Những gì đã làm
 
 1. **Chạy lại mô hình của tác giả.** Mô hình là LSTM encoder–decoder, dùng đúng mã nguồn và dữ liệu OPSD của tác giả: 43.824 giờ, từ 2015 đến 2019.
-2. **Phát hiện và sửa cách chia dữ liệu.** Mã gốc dùng luôn năm 2019, tức dữ liệu chấm điểm, để chọn mô hình. Dự án chia lại theo thời gian: 60% để học, 20% (năm 2018) để chọn mô hình, 20% (năm 2019) chỉ để chấm điểm. Mô hình được huấn luyện lại 3 lần với 3 seed.
+2. **Phát hiện và sửa cách chia dữ liệu.** Mã gốc dùng luôn năm 2019, tức dữ liệu chấm điểm, để chọn mô hình. Dự án chia lại theo thời gian: 60% để học, 20% (năm 2018) để chọn mô hình, 20% (năm 2019) chỉ để chấm điểm. Mô hình được huấn luyện lại 5 lần với 5 seed.
 3. **So sánh với các phương pháp khác** trên cùng năm 2019:
    - Simple Naive và Seasonal Naive;
    - Prophet;
-   - DLinear, lấy từ một bài báo khác (AAAI 2023).
+   - DLinear, lấy từ một bài báo khác (AAAI 2023), cũng chạy 5 seed. Kiểm định t Welch được dùng để xem chênh lệch với LSTM có ý nghĩa thống kê không.
 4. **Hiệu chỉnh khoảng dự báo.** Khoảng gốc rộng quá mức cần. Nhân σ với một hệ số c = 0,84, tìm trên năm 2018, thì khoảng hẹp đi 15,8% và tỷ lệ giá trị thật nằm trong khoảng về 95,06%.
 5. **Làm một trang web demo** để xem lại dự báo ở bất kỳ giờ nào của năm 2019.
 
@@ -22,14 +22,14 @@ Dự án chạy lại ví dụ trong bài báo *ProLoaF: Probabilistic load fore
 | Simple Naive | 11.121 | 8.778 |
 | Seasonal Naive | 6.932 | 4.541 |
 | Prophet | 3.946 | 2.898 |
-| **LSTM, chia dữ liệu đúng (TB 3 seed)** | **3.355 ± 264** | **2.206 ± 218** |
-| DLinear (TB 3 seed) | 3.570 ± 19 | 2.433 ± 36 |
+| **LSTM, chia dữ liệu đúng (TB 5 seed)** | **3.456 ± 232** | **2.302 ± 202** |
+| DLinear (TB 5 seed) | 3.570 ± 13 | 2.427 ± 28 |
 
 Cách đọc bảng:
 
 - LSTM tốt hơn rõ rệt so với Naive và Prophet.
-- LSTM chỉ hơn DLinear khoảng 6%. Khoảng cách này nhỏ hơn mức dao động giữa các lần chạy LSTM.
-- DLinear dự báo tốt hơn trong 6 giờ đầu.
+- LSTM chỉ hơn DLinear khoảng 3%. Kiểm định t Welch trên 5 seed cho p ≈ 0,33, nên chênh lệch này chưa có ý nghĩa thống kê.
+- DLinear dự báo tốt hơn trong 7 giờ đầu và ổn định hơn nhiều giữa các lần chạy.
 - Phần hiệu chỉnh khoảng và trang demo vẫn dùng mô hình chạy theo mã gốc.
 
 ## Cấu trúc thư mục
@@ -60,7 +60,14 @@ Muốn huấn luyện lại LSTM theo cách chia đúng (mỗi seed khoảng 30 
 python .\reproduction\run_lstm_strict_602020.py --output-dir .\artifacts\paper_reproduction\lan_chay_moi --seed 1
 ```
 
-Các script khác trong `reproduction/` chạy Naive, Prophet, DLinear và bước hiệu chỉnh khoảng.
+Tổng hợp 5 seed và tính p-value:
+
+```powershell
+python .\reproduction\aggregate_lstm_seeds.py --seeds 1,2,3,4,5
+python .\reproduction\compare_lstm_dlinear_seeds.py
+```
+
+Các script khác trong `reproduction/` chạy Naive, Prophet, DLinear (`--seeds` để chọn seed) và bước hiệu chỉnh khoảng.
 
 ## Nguồn
 

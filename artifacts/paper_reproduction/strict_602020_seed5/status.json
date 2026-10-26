@@ -1,0 +1,31 @@
+{
+  "state": "complete",
+  "pid": 30588,
+  "started_utc": "2026-10-26T03:30:56.205308+00:00",
+  "epoch": 30,
+  "max_epochs": 50,
+  "validation_B_loss": -2.1684836144767585,
+  "best_epoch": 23,
+  "best_validation_B_loss": -2.2109409793099375,
+  "actual_epochs": 30,
+  "training_wall_seconds": 2749.1271756,
+  "checkpoint_sha256": "d80917200b6176d364cb6f28c5409116513e9049e46c236285635c6f19882741",
+  "finished_utc": "2026-10-26T04:16:56.666797+00:00",
+  "total_wall_seconds": 2760.4099687,
+  "test_summary": {
+    "c": 1.0,
+    "PICP_percent": 97.45249175877449,
+    "abs_coverage_error_pp": 2.452491758774485,
+    "Sharpness": 0.30903542041778564,
+    "MIS_standard_95": 0.3835456967353821,
+    "RMSE": 0.0778491273522377,
+    "MAE": 0.05317017436027527,
+    "RMSE_MW": 3599.899347022176,
+    "MAE_MW": 2458.695202767849,
+    "Sharpness_MW": 14290.415910959244,
+    "MIS_standard_95_MW": 17735.920108437538,
+    "NllGauss": -2.264335591952579,
+    "Residuals_MW": 684.8831063210964,
+    "ProLoaF_legacy_MIS": 0.10634034126996994
+  }
+}

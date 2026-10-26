@@ -1,0 +1,26 @@
+{
+  "RMSE_MW": {
+    "LSTM_mean": 3455.5260855048896,
+    "LSTM_sample_std": 231.93790052851492,
+    "DLinear_mean": 3570.382039088466,
+    "DLinear_sample_std": 13.441372926033118,
+    "difference_LSTM_minus_DLinear": -114.85595358357659,
+    "relative_difference_percent": -3.21690934824722,
+    "welch_t": -1.1054490424848018,
+    "welch_p_two_sided": 0.33059506681853396,
+    "mann_whitney_U": 15.0,
+    "mann_whitney_p_two_sided": 0.6904761904761905
+  },
+  "MAE_MW": {
+    "LSTM_mean": 2301.8762519940733,
+    "LSTM_sample_std": 202.3556891587624,
+    "DLinear_mean": 2426.6560891838444,
+    "DLinear_sample_std": 28.13428235139179,
+    "difference_LSTM_minus_DLinear": -124.77983718977111,
+    "relative_difference_percent": -5.142048671253545,
+    "welch_t": -1.3657037739620275,
+    "welch_p_two_sided": 0.24130052097825486,
+    "mann_whitney_U": 11.0,
+    "mann_whitney_p_two_sided": 0.8412698412698413
+  }
+}

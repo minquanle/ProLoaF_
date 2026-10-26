@@ -1,8 +1,11 @@
-"""Aggregate the three strict 60/20/20 LSTM runs (seeds 1, 2, 3) into one summary.
+"""Aggregate strict 60/20/20 LSTM runs into one summary.
 
 Reads only finished run folders; writes a per-seed table, mean +/- sample std,
 and RMSE by horizon averaged over seeds. No model is trained or changed.
+Default seeds 1-3 rebuild `strict_602020_3seeds_summary`; `--seeds 1,2,3,4,5`
+writes `strict_602020_5seeds_summary`.
 """
+import argparse
 import json
 from pathlib import Path
 
@@ -10,14 +13,22 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 ART = ROOT / 'artifacts/paper_reproduction'
-RUNS = {1: 'strict_602020_20261013', 2: 'strict_602020_seed2', 3: 'strict_602020_seed3'}
-OUT = ART / 'strict_602020_3seeds_summary'
 METRICS = ['RMSE_MW', 'MAE_MW', 'PICP_percent', 'Sharpness_MW', 'MIS_standard_95_MW']
 
 
+def run_folder(seed):
+    # Seed 1 was the first strict run and kept its dated folder name.
+    return 'strict_602020_20261013' if seed == 1 else f'strict_602020_seed{seed}'
+
+
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--seeds', default='1,2,3', help='comma-separated seeds to aggregate.')
+    seeds = [int(s) for s in parser.parse_args().seeds.split(',')]
+    out = ART / f'strict_602020_{len(seeds)}seeds_summary'
     rows, horizons = [], []
-    for seed, folder in RUNS.items():
+    for seed in seeds:
+        folder = run_folder(seed)
         status = json.loads((ART / folder / 'status.json').read_text(encoding='utf-8'))
         assert status['state'] == 'complete', folder
         protocol = json.loads((ART / folder / 'protocol.json').read_text(encoding='utf-8'))
@@ -31,10 +42,10 @@ def main():
     per_seed = pd.DataFrame(rows)
     aggregate = {m: {'mean': float(per_seed[m].mean()), 'sample_std': float(per_seed[m].std(ddof=1))} for m in METRICS}
     by_horizon = pd.concat(horizons).groupby('horizon', as_index=False)['RMSE_MW'].mean()
-    OUT.mkdir(exist_ok=True)
-    per_seed.to_csv(OUT / 'per_seed.csv', index=False)
-    by_horizon.to_csv(OUT / 'rmse_by_horizon_mean3.csv', index=False)
-    (OUT / 'aggregate.json').write_text(json.dumps(aggregate, indent=2), encoding='utf-8')
+    out.mkdir(exist_ok=True)
+    per_seed.to_csv(out / 'per_seed.csv', index=False)
+    by_horizon.to_csv(out / f'rmse_by_horizon_mean{len(seeds)}.csv', index=False)
+    (out / 'aggregate.json').write_text(json.dumps(aggregate, indent=2), encoding='utf-8')
     print(per_seed.round(2).to_string(index=False))
     print(json.dumps(aggregate, indent=2))
 
