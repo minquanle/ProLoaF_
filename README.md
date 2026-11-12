@@ -1,6 +1,6 @@
 # Tái lập ProLoaF: dự báo phụ tải điện Đức 24 giờ tới
 
-Dự án giữa kỳ môn **Phân tích dữ liệu dự báo** (INT3234E 1, Trường Đại học Công nghệ – ĐHQGHN).
+Dự án giữa kỳ và cuối kỳ môn **Phân tích dữ liệu dự báo** (INT3234E 1, Trường Đại học Công nghệ – ĐHQGHN).
 
 Dự án chạy lại ví dụ trong bài báo *ProLoaF: Probabilistic load forecasting for power systems* (SoftwareX, 2023). Mô hình xem 147 giờ gần nhất rồi dự báo phụ tải điện nước Đức cho 24 giờ tiếp theo. Mỗi giờ có hai kết quả: một giá trị dự báo và một khoảng 95%.
 
@@ -32,12 +32,37 @@ Cách đọc bảng:
 - DLinear dự báo tốt hơn trong 7 giờ đầu và ổn định hơn nhiều giữa các lần chạy.
 - Phần hiệu chỉnh khoảng và trang demo vẫn dùng mô hình chạy theo mã gốc.
 
+## Phần cuối kỳ: cải thiện mô hình và giải thích bằng XAI
+
+Đề cuối kỳ yêu cầu cải thiện lời giải của giữa kỳ và dùng một kỹ thuật XAI để giải thích kết quả dự báo.
+
+1. **Chẩn đoán trên năm 2018 (tập chọn mô hình), không dùng năm 2019.** Permutation importance cho thấy LSTM gần như bỏ qua phụ tải Đức trong quá khứ: xáo cột này chỉ làm RMSE tăng 4 MW. Sai số vào ngày lễ cao khoảng 5 lần ngày thường.
+2. **Hai cải tiến về dữ liệu, giữ nguyên kiến trúc.** Chuẩn hóa phụ tải Áo (mã gốc bỏ sót) và thêm hai cột ngày lễ cho decoder. Thêm ensemble 5 seed và hiệu chỉnh khoảng trên năm 2018.
+3. **XAI**: permutation importance, Integrated Gradients cho cả μ và σ, occlusion, deletion test để kiểm tra độ tin cậy, và phân tích các ngày cụ thể.
+
+| Năm 2019 | RMSE (MW) | PICP | Độ rộng khoảng (MW) | MAE ngày lễ (MW) |
+|---|---:|---:|---:|---:|
+| LSTM giữa kỳ, ensemble + hiệu chỉnh | 3.375 | 95,5% | 10.971 | 12.593 |
+| **LSTM cuối kỳ, ensemble + hiệu chỉnh** | **1.571** | **95,2%** | **5.930** | **1.302** |
+| DLinear, ensemble | 3.514 | – | – | – |
+
+Sau khi sửa, XAI cho thấy mô hình đã dùng phụ tải Đức của những giờ gần nhất và cùng giờ hôm trước. Mọi chênh lệch đều có ý nghĩa thống kê (Diebold–Mariano trên 359 ngày, p < 0,005). Chi tiết ở `artifacts/final_exam/KET_QUA_CUOI_KY.md`.
+
+```powershell
+python .\reproduction\final\diagnose_on_validation.py   # chẩn đoán trên 2018
+python .\reproduction\final\evaluate_improvements.py    # bảng kết quả và kiểm định
+python .\reproduction\final\xai_analysis.py at_hol      # XAI cho mô hình cuối kỳ
+bash reproduction/final/run_all_variants.sh <python>    # huấn luyện lại (khoảng 3–4 giờ)
+```
+
 ## Cấu trúc thư mục
 
 ```text
 paper_source/                  mã nguồn gốc của tác giả (submodule)
-reproduction/                  các script chạy thí nghiệm
-artifacts/paper_reproduction/  mô hình đã huấn luyện, dự báo và kết quả
+reproduction/                  các script chạy thí nghiệm giữa kỳ
+reproduction/final/            script cuối kỳ: cải tiến, đánh giá, XAI
+artifacts/paper_reproduction/  mô hình, dự báo và kết quả giữa kỳ
+artifacts/final_exam/          mô hình, dự báo, kết quả và hình XAI cuối kỳ
 demo/                          trang web demo
 ```
 

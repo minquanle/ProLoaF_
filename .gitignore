@@ -55,3 +55,11 @@ artifacts/paper_reproduction/dlinear_dryrun_*/
 
 # Separate stderr captures of background seed runs.
 artifacts/paper_reproduction/strict_*.log.err
+
+# Keep the training logs that back the reported results.
+!artifacts/paper_reproduction/strict_602020_20261013.stdout.log
+!artifacts/paper_reproduction/dlinear_seed45.stdout.log
+
+# Final-exam runs: keep models, predictions and histories; skip TensorBoard traces.
+artifacts/final_exam/runs/*/runs/
+artifacts/final_exam/runs/*/best_weights.pt

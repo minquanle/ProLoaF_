@@ -1,0 +1,4 @@
+case,start_berlin,RMSE_MW,top_input
+best day,2019-01-26 23:00:00+01:00,395.1502380371094,DE load
+worst day,2019-05-01 00:00:00+02:00,12564.900390625,DE load
+Christmas Eve 2019,2019-12-24 00:00:00+01:00,4816.5322265625,DE load

@@ -1,0 +1,57 @@
+permutation AT load 124.3
+permutation DE load 4866.6
+permutation DE temperature 59.6
+permutation DE radiation direct 10.6
+permutation DE radiation diffuse 29.4
+permutation Calendar: hour one-hot 5067.6
+permutation Calendar: weekday one-hot 2499.1
+permutation Calendar: month one-hot 929.5
+permutation Calendar: sin features 4277.8
+permutation All calendar (decoder) 9631.6
+IG mu relative completeness error 0.001
+IG logvar relative completeness error 0.0014
+ k_cells cells_removed  RMSE_MW  RMSE_full_MW
+      10      top-|IG|   5911.5        2131.5
+      10        random   2131.4        2131.5
+      25      top-|IG|   6298.4        2131.5
+      25        random   2127.5        2131.5
+      50      top-|IG|   6322.5        2131.5
+      50        random   2184.1        2131.5
+     100      top-|IG|   6187.0        2131.5
+     100        random   2297.8        2131.5
+     200      top-|IG|   6067.8        2131.5
+     200        random   2714.7        2131.5
+              case              start_berlin      RMSE_MW top_input
+          best day 2019-01-26 23:00:00+01:00   395.150238   DE load
+         worst day 2019-05-01 00:00:00+02:00 12564.900391   DE load
+Christmas Eve 2019 2019-12-24 00:00:00+01:00  4816.532227   DE load
+                    group  RMSE_increase_MW  std_MW
+   All calendar (decoder)            9631.6    11.2
+   Calendar: hour one-hot            5067.6     7.0
+                  DE load            4866.6    20.8
+   Calendar: sin features            4277.8    10.8
+Calendar: weekday one-hot            2499.1    13.7
+  Calendar: month one-hot             929.5     2.1
+                  AT load             124.3     1.0
+           DE temperature              59.6     3.1
+     DE radiation diffuse              29.4     3.1
+      DE radiation direct              10.6     1.8
+output    part              feature  mean_abs_attribution  share_percent
+    mu encoder              AT load                  0.64           3.02
+    mu encoder              DE load                  3.61          16.99
+    mu encoder       DE temperature                  0.32           1.53
+    mu encoder  DE radiation direct                  0.23           1.07
+    mu encoder DE radiation diffuse                  0.28           1.34
+    mu decoder         hour one-hot                  8.39          39.54
+    mu decoder      weekday one-hot                  1.97           9.27
+    mu decoder        month one-hot                  1.20           5.66
+    mu decoder         sin features                  4.58          21.59
+logvar encoder              AT load                  1.22           1.92
+logvar encoder              DE load                  6.88          10.83
+logvar encoder       DE temperature                  0.90           1.42
+logvar encoder  DE radiation direct                  0.91           1.44
+logvar encoder DE radiation diffuse                  1.02           1.60
+logvar decoder         hour one-hot                 19.77          31.13
+logvar decoder      weekday one-hot                 10.70          16.86
+logvar decoder        month one-hot                 11.94          18.80
+logvar decoder         sin features                 10.16          16.00

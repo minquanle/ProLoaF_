@@ -1,0 +1,38 @@
+seed=4 epoch=1/50 train=0.0128547 B=0.0072416 best=1
+seed=4 epoch=2/50 train=0.0067330 B=0.0072848 best=1
+seed=4 epoch=3/50 train=0.0064254 B=0.0070563 best=3
+seed=4 epoch=4/50 train=0.0063492 B=0.0062489 best=4
+seed=4 epoch=5/50 train=0.0062073 B=0.0062175 best=5
+seed=4 epoch=6/50 train=0.0061804 B=0.0059418 best=6
+seed=4 epoch=7/50 train=0.0061562 B=0.0060776 best=6
+seed=4 epoch=8/50 train=0.0061870 B=0.0062409 best=6
+seed=4 epoch=9/50 train=0.0061305 B=0.0060665 best=6
+seed=4 epoch=10/50 train=0.0060777 B=0.0060008 best=6
+seed=4 epoch=11/50 train=0.0060756 B=0.0074503 best=6
+seed=4 epoch=12/50 train=0.0060937 B=0.0069218 best=6
+seed=4 epoch=13/50 train=0.0061190 B=0.0072639 best=6
+seed=5 epoch=1/50 train=0.0128352 B=0.0070817 best=1
+seed=5 epoch=2/50 train=0.0067342 B=0.0070603 best=2
+seed=5 epoch=3/50 train=0.0064298 B=0.0063588 best=3
+seed=5 epoch=4/50 train=0.0062981 B=0.0068348 best=3
+seed=5 epoch=5/50 train=0.0062338 B=0.0064360 best=3
+seed=5 epoch=6/50 train=0.0061748 B=0.0067706 best=3
+seed=5 epoch=7/50 train=0.0061820 B=0.0068852 best=3
+seed=5 epoch=8/50 train=0.0061495 B=0.0066393 best=3
+seed=5 epoch=9/50 train=0.0061855 B=0.0064297 best=3
+seed=5 epoch=10/50 train=0.0061084 B=0.0061694 best=10
+seed=5 epoch=11/50 train=0.0061964 B=0.0059895 best=11
+seed=5 epoch=12/50 train=0.0061101 B=0.0061468 best=11
+seed=5 epoch=13/50 train=0.0060638 B=0.0060712 best=11
+seed=5 epoch=14/50 train=0.0060224 B=0.0064131 best=11
+seed=5 epoch=15/50 train=0.0060734 B=0.0065468 best=11
+seed=5 epoch=16/50 train=0.0060743 B=0.0059900 best=11
+seed=5 epoch=17/50 train=0.0060947 B=0.0061081 best=11
+seed=5 epoch=18/50 train=0.0060920 B=0.0065045 best=11
+                           model  seed      RMSE_MW      MAE_MW  Bias_actual_minus_predicted_MW                                            input_note
+ProLoaF_LSTM_strict_multivariate   1.0  3652.552063 2457.650806                      -55.350174 5 historical features + future calendar; Gaussian NLL
+                 SeasonalNaive24   NaN  6932.131666 4541.112199                      -16.042190                                          DE load only
+                     SimpleNaive   NaN 11120.697887 8777.722350                      -16.064820                                          DE load only
+              DLinear_univariate   4.0  3571.619125 2428.393321                     -289.906579                                     DE load only; MSE
+              DLinear_univariate   5.0  3570.291250 2405.752001                      304.543374                                     DE load only; MSE
+Seed mean/std: {"RMSE_MW": {"mean": 3570.9551870724536, "sample_std": 0.938949419565568}, "MAE_MW": {"mean": 2417.0726610814163, "sample_std": 16.009831218058032}, "train_wall_seconds": {"mean": 23.807086050000002, "sample_std": 6.598198142253597}}
