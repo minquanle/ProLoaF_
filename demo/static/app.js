@@ -1,5 +1,5 @@
 const $ = (selector) => document.querySelector(selector);
-const state = { meta: null, data: null, showOriginal: true };
+const state = { meta: null, data: null, showOriginal: true, model: "final" };
 const formatMW = (value) => `${Math.round(value).toLocaleString("vi-VN")} MW`;
 const formatDate = (timestamp) => new Intl.DateTimeFormat("vi-VN", { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date(timestamp));
 const formatTime = (timestamp) => new Intl.DateTimeFormat("vi-VN", { hour: "2-digit", minute: "2-digit" }).format(new Date(timestamp));
@@ -17,7 +17,7 @@ async function waitForModel() {
     state.meta = status; $("#dot").parentElement.classList.add("ready"); $("#status-text").textContent = "Checkpoint sẵn sàng";
     $("#loading").classList.add("hidden"); $("#dashboard").classList.remove("hidden"); $("#summary").classList.remove("hidden");
     const slider = $("#origin-slider"); slider.max = status.origins - 1; slider.value = Math.min(1000, status.origins - 1);
-    $("#c-value").textContent = `c = ${status.c.toFixed(6)}`;
+    $("#c-value").textContent = `c = ${status.models.final.c.toFixed(4)}`;
     await loadSummary(); await loadForecast(Number(slider.value));
   } catch (error) {
     $("#loading").innerHTML = `<div><b>Không thể khởi động demo</b><p>${error.message}</p></div>`;
@@ -27,11 +27,11 @@ async function waitForModel() {
 
 async function loadSummary() {
   const result = await fetchJSON("/api/summary");
-  $("#summary-body").innerHTML = result.summary.map((row) => `<tr><td>${row.interval.includes("original") ? "LSTM gốc" : "LSTM calibrated"}</td><td>${Number(row.c).toFixed(6)}</td><td>${Number(row.PICP_percent).toFixed(2)}%</td><td>${Number(row.Sharpness).toFixed(6)}</td><td>${Number(row.RMSE).toFixed(6)}</td><td>${Number(row.MAE).toFixed(6)}</td></tr>`).join("");
+  $("#summary-body").innerHTML = result.summary.map((row) => `<tr><td>${row.name}</td><td>${Number(row.c).toFixed(4)}</td><td>${Number(row.picp).toFixed(2)}%</td><td>${formatMW(row.width)}</td><td>${formatMW(row.rmse)}</td><td>${formatMW(row.mae)}</td></tr>`).join("");
 }
 
 async function loadForecast(origin) {
-  try { state.data = await fetchJSON(`/api/forecast?origin=${origin}`); render(); }
+  try { state.data = await fetchJSON(`/api/forecast?origin=${origin}&model=${state.model}`); render(); }
   catch (error) { console.error(error); }
 }
 
@@ -42,7 +42,9 @@ function render() {
   $("#rmse").textContent = formatMW(metrics.rmse); $("#mae").textContent = formatMW(metrics.mae);
   $("#picp").textContent = `${metrics.original.picp.toFixed(1)}% → ${metrics.calibrated.picp.toFixed(1)}%`;
   $("#sharpness").textContent = `${formatMW(metrics.original.sharpness)} → ${formatMW(metrics.calibrated.sharpness)}`;
-  $("#c-value").textContent = `c = ${c.toFixed(6)}`;
+  $("#c-value").textContent = `c = ${c.toFixed(4)}`;
+  $("#model-label").textContent = state.data.label;
+  renderExplain(state.data.explain);
   document.querySelectorAll(".legend-original").forEach((node) => node.style.opacity = state.showOriginal ? "1" : ".32");
   drawChart();
 }
@@ -67,10 +69,40 @@ function drawChart() {
   labels.forEach((i) => { const timestamp = i < start ? history.timestamps[i] : forecast.timestamps[i - start]; const text = new Intl.DateTimeFormat("vi-VN", { day: "2-digit", month: "2-digit" }).format(new Date(timestamp)); ctx.fillText(text, x(i) - 12, height - 19); });
 }
 
+function renderExplain(explain) {
+  $("#explain-off").classList.toggle("hidden", !!explain);
+  document.querySelectorAll(".explain-grid").forEach((node) => node.classList.toggle("hidden", !explain));
+  $("#holiday-badge").classList.toggle("hidden", !explain || !explain.holiday_hours);
+  if (!explain) return;
+  const maxAbs = Math.max(...explain.contributions.map((r) => Math.abs(r.mw)), 1);
+  $("#contributions").innerHTML = explain.contributions.slice(0, 7).map((row) => {
+    const width = Math.min(100, Math.abs(row.mw) / maxAbs * 100);
+    return `<li><span>${row.name}</span><i class="${row.mw >= 0 ? "up" : "down"}" style="width:${width}%"></i><b>${row.mw >= 0 ? "+" : ""}${Math.round(row.mw).toLocaleString("vi-VN")}</b></li>`;
+  }).join("");
+  const canvas = $("#heatmap"), wrap = canvas.parentElement, ratio = window.devicePixelRatio || 1;
+  const width = wrap.clientWidth, height = 170; canvas.width = width * ratio; canvas.height = height * ratio; canvas.style.height = `${height}px`;
+  const ctx = canvas.getContext("2d"); ctx.setTransform(ratio, 0, 0, ratio, 0, 0); ctx.clearRect(0, 0, width, height);
+  const rows = explain.heatmap, labelW = 118, cellW = (width - labelW) / rows[0].length, cellH = (height - 22) / rows.length;
+  const lim = Math.max(...rows.flat().map(Math.abs), 1e-6);
+  ctx.font = "11px system-ui";
+  rows.forEach((row, r) => {
+    ctx.fillStyle = "#a6b2c5"; ctx.fillText(explain.features[r], 0, r * cellH + cellH / 2 + 4);
+    row.forEach((v, c) => { const a = Math.min(1, Math.abs(v) / lim); ctx.fillStyle = v >= 0 ? `rgba(251,113,133,${a})` : `rgba(79,140,255,${a})`; ctx.fillRect(labelW + c * cellW, r * cellH, cellW + 0.5, cellH - 2); });
+  });
+  ctx.fillStyle = "#7d91aa"; ctx.fillText("−72 giờ", labelW, height - 4); ctx.fillText("thời điểm dự báo", width - 98, height - 4);
+}
+
+function setModel(model) {
+  state.model = model;
+  $("#model-final").classList.toggle("active", model === "final"); $("#model-midterm").classList.toggle("active", model === "midterm");
+  loadForecast(state.data ? state.data.origin : Number($("#origin-slider").value));
+}
+$("#model-final").addEventListener("click", () => setModel("final"));
+$("#model-midterm").addEventListener("click", () => setModel("midterm"));
 $("#origin-slider").addEventListener("input", (event) => loadForecast(Number(event.target.value)));
 $("#previous").addEventListener("click", () => loadForecast(Math.max(0, state.data.origin - 24)));
 $("#next").addEventListener("click", () => loadForecast(Math.min(state.data.origin_count - 1, state.data.origin + 24)));
 $("#random").addEventListener("click", () => loadForecast(Math.floor(Math.random() * state.data.origin_count)));
 $("#original-toggle").addEventListener("change", (event) => { state.showOriginal = event.target.checked; drawChart(); });
-window.addEventListener("resize", () => state.data && drawChart());
+window.addEventListener("resize", () => { if (state.data) { drawChart(); renderExplain(state.data.explain); } });
 waitForModel();

@@ -121,6 +121,13 @@
       "dm_t": -5.626541431393597,
       "p_two_sided": 3.713532178941781e-08
     },
+    "ensemble_vs_DLinear_calendar_ensemble_DM": {
+      "days": 359,
+      "mean_loss_diff_MW2": -4942438.414722556,
+      "dm_t": -11.469045787763635,
+      "p_two_sided": 3.80164669288587e-26
+    },
+    "single_seed_RMSE_vs_DLinear_calendar_welch_p": 6.177774198060495e-08,
     "ensemble_vs_at_ensemble_DM": {
       "days": 359,
       "mean_loss_diff_MW2": -2347791.2521673176,

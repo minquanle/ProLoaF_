@@ -40,6 +40,7 @@ Kết luận: (a) phụ tải Áo **chưa chuẩn hóa** lấn át đầu vào c
 | Mô hình | RMSE (MW) | MAE (MW) | PICP | Độ rộng khoảng (MW) | MIS (MW) | MAE ngày lễ (MW) |
 |---|---|---|---|---|---|---|
 | DLinear, ensemble | 3514 | 2354 | – | – | – | – |
+| DLinear + cùng 48 cột lịch và ngày lễ, ensemble | 2542 | 1840 | – | – | – | 4,192 |
 | LSTM-chuẩn, từng seed | 3455 ± 232 | 2302 | 97.3% | 14,132 | 17,853 | – |
 | LSTM-chuẩn, ensemble + c | 3375 | 2233 | 95.5% | 10,971 | 16,898 | 12,593 |
 | `at`, từng seed | 2175 ± 74 | 1383 | 98.4% | 9,811 | 11,835 | – |
@@ -59,6 +60,7 @@ Hiệu chỉnh c riêng cho từng giờ cho kết quả gần như bằng c chu
 | `at_hol` ensemble với `at` ensemble (đóng góp của đặc trưng ngày lễ) | DM | 0.004 |
 | `at` ensemble với LSTM-chuẩn ensemble (đóng góp của việc chuẩn hóa AT) | DM | 1.8e-8 |
 | LSTM-chuẩn ensemble với DLinear ensemble | DM | 0.003 |
+| `at_hol` ensemble với DLinear + lịch ensemble | DM | 3.8e-26 |
 
 ## 5. XAI sau khi cải thiện: mô hình đã "nhìn" đúng chỗ
 | | LSTM-chuẩn | `at` | `at_hol` |
@@ -76,6 +78,8 @@ Hiệu chỉnh c riêng cho từng giờ cho kết quả gần như bằng c chu
 python reproduction/final/evaluate_improvements.py         # bảng mục 4 và kiểm định
 python reproduction/final/xai_analysis.py                  # XAI cho LSTM-chuẩn  -> xai/
 python reproduction/final/xai_analysis.py at_hol           # XAI cho bản tốt nhất -> xai/at_hol/
+python reproduction/final/run_dlinear_calendar.py          # DLinear thêm cột lịch -> dlinear_calendar/
+python demo/run_demo.py                                    # demo có chọn mô hình và giải thích IG
 ```
 Huấn luyện lại các biến thể (khoảng 3–4 giờ trên CPU): `bash reproduction/final/run_all_variants.sh <python>`.
 
