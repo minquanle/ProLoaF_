@@ -32,7 +32,7 @@ Kết luận: (a) phụ tải Áo **chưa chuẩn hóa** lấn át đầu vào c
 | Biến thể | Thay đổi |
 |---|---|
 | `at` | Thêm phụ tải Áo vào nhóm được chuẩn hóa min-max (fit trên A) |
-| `at_hol` | Như `at`, thêm `is_holiday` (ngày lễ toàn quốc Đức) và `is_xmas` (24/12–01/01) cho decoder. Cả hai là thông tin lịch, biết trước. |
+| `at_hol` (sau ensemble và hiệu chỉnh gọi là **LSTM cải tiến**) | Như `at`, thêm `is_holiday` (ngày lễ toàn quốc Đức) và `is_xmas` (24/12–01/01) cho decoder. Cả hai là thông tin lịch, biết trước. |
 | Ensemble 5 seed | μ = trung bình các μ; σ tính từ hỗn hợp Gaussian của 5 seed |
 | Hiệu chỉnh trên B | c = phân vị 95% (split conformal) của \|y−μ\|/(1.96σ) trên tập B |
 
@@ -62,6 +62,21 @@ Hiệu chỉnh c riêng cho từng giờ cho kết quả gần như bằng c chu
 | LSTM-chuẩn ensemble với DLinear ensemble | DM | 0.003 |
 | `at_hol` ensemble với DLinear + lịch ensemble | DM | 3.8e-26 |
 
+### Kiểm tra bổ sung (`python reproduction/final/extra_checks.py`)
+Kiểm định DM với phương sai Newey–West (7 ngày trễ) cho cùng kết luận: C1 p = 0.001, C2 p = 0.008, `at_hol` với LSTM-chuẩn p = 1.6e-4, với DLinear p = 6e-15, với DLinear + lịch p = 5e-17; LSTM-chuẩn ensemble với DLinear ensemble p = 0.028.
+
+Độ phủ của khoảng 95% đã hiệu chỉnh, theo nhóm giờ trên C (`results/coverage_breakdown.csv`):
+
+| Nhóm giờ | Tỷ trọng | LSTM-chuẩn | `at` | `at_hol` |
+|---|---|---|---|---|
+| Cả năm | 100% | 95.5% | 95.8% | 95.2% |
+| Mùa đông / xuân / hè / thu | ~25% mỗi mùa | 94.9 / 94.4 / 96.7 / 95.9% | 95.0 / 95.4 / 96.5 / 96.2% | 92.7 / 96.2 / 96.1 / 95.7% |
+| Ngày làm việc / cuối tuần (không lễ) | 68% / 28% | 97.9 / 96.8% | 97.4 / 95.9% | 96.0 / 94.4% |
+| Ngày lễ toàn quốc | 2.2% | 17.2% | 50.0% | 92.3% |
+| Giáng sinh – năm mới (không lễ) | 1.6% | 74.9% | 89.7% | 80.2% |
+
+Hệ số c chỉ bảo đảm độ phủ tính chung. Cờ ngày lễ đưa độ phủ ngày lễ từ 17% lên 92%, nhưng mùa đông (92.7%) và giai đoạn Giáng sinh (80.2%) còn thấp hơn 95%.
+
 ## 5. XAI sau khi cải thiện: mô hình đã "nhìn" đúng chỗ
 | | LSTM-chuẩn | `at` | `at_hol` |
 |---|---|---|---|
@@ -79,6 +94,7 @@ python reproduction/final/evaluate_improvements.py         # bảng mục 4 và 
 python reproduction/final/xai_analysis.py                  # XAI cho LSTM-chuẩn  -> xai/
 python reproduction/final/xai_analysis.py at_hol           # XAI cho bản tốt nhất -> xai/at_hol/
 python reproduction/final/run_dlinear_calendar.py          # DLinear thêm cột lịch -> dlinear_calendar/
+python reproduction/final/extra_checks.py                  # độ phủ theo nhóm giờ, DM Newey-West
 python demo/run_demo.py                                    # demo có chọn mô hình và giải thích IG
 ```
 Huấn luyện lại các biến thể (khoảng 3–4 giờ trên CPU): `bash reproduction/final/run_all_variants.sh <python>`.
@@ -87,5 +103,5 @@ Huấn luyện lại các biến thể (khoảng 3–4 giờ trên CPU): `bash r
 |---|---|
 | `runs/{at,at_hol}_seed*/` | Mô hình, log theo từng epoch, dự báo trên B và C |
 | `runs/baseline_seed*/` | Dự báo trên B và C của LSTM-chuẩn (giữa kỳ) |
-| `results/` | `summary.csv`, `per_horizon.csv`, `tests.json` |
+| `results/` | `summary.csv`, `per_horizon.csv`, `tests.json`, `coverage_breakdown.csv`, `dm_robust.json` |
 | `xai/`, `xai/at/`, `xai/at_hol/` | Hình và bảng XAI cho từng mô hình |

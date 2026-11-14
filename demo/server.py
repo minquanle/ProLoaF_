@@ -110,14 +110,14 @@ class ForecastStore:
         rows = summary[summary["variant"] == "at_hol"].set_index("model")
         c = float(tests["at_hol"]["c_global_from_B"])
         self.models["final"] = {
-            "label": "LSTM-cuối kỳ (ensemble 5 seed)",
+            "label": "LSTM cải tiến (ensemble 5 seed)",
             "actual": saved["actual_scaled"] * load_range + load_min,
             "mean": saved["mean_scaled"] * load_range + load_min,
             "sigma": saved["sigma_scaled"] * load_range, "c": c,
             "summary": [{"name": name, "c": cc, "picp": float(rows.loc[key, "PICP_percent"]), "width": float(rows.loc[key, "Width_MW"]),
                          "rmse": float(rows.loc[key, "RMSE_MW"]), "mae": float(rows.loc[key, "MAE_MW"])}
-                        for name, key, cc in [("LSTM-cuối kỳ, khoảng gốc", "ensemble raw", 1.0),
-                                              ("LSTM-cuối kỳ, đã hiệu chỉnh", "ensemble + global c", c)]],
+                        for name, key, cc in [("LSTM cải tiến, khoảng gốc", "ensemble raw", 1.0),
+                                              ("LSTM cải tiến, đã hiệu chỉnh", "ensemble + global c", c)]],
         }
         assert np.allclose(self.models["final"]["actual"], self.models["midterm"]["actual"], atol=0.05)
         config = json.loads(FINAL_CONFIG.read_text(encoding="utf-8"))

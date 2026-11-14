@@ -26,7 +26,7 @@ def main():
     frame = pd.read_csv(ROOT / 'paper_source/data/opsd.csv', sep=';', index_col=0, parse_dates=True, usecols=[0])
     test_index = frame.index[int(len(frame) * 0.8):]
     berlin = test_index[np.arange(8595) + 147].tz_localize('UTC').tz_convert('Europe/Berlin')
-    runs = {'LSTM-chuẩn (giữa kỳ)': ('baseline', '#E48E7E'), 'LSTM-cuối kỳ': ('at_hol', '#3183A7')}
+    runs = {'LSTM-chuẩn (giữa kỳ)': ('baseline', '#E48E7E'), 'LSTM cải tiến': ('at_hol', '#3183A7')}
     days = [('Thứ Tư 01/05/2019 – Quốc tế Lao động', 5, 1), ('Thứ Năm 20/06/2019 – lễ Mình Thánh Chúa (một số bang)', 6, 20),
             ('Thứ Ba 24/12/2019 – đêm Giáng sinh', 12, 24)]
     fig, axes = plt.subplots(1, 3, figsize=(15, 4.2), sharey=True)
@@ -55,7 +55,7 @@ def main():
 
     fig, ax = plt.subplots(figsize=(10, 3.6))
     for path, label, color in [(FE / 'xai/integrated_gradients_by_lag.csv', 'LSTM-chuẩn (giữa kỳ)', '#E48E7E'),
-                               (FE / 'xai/at_hol/integrated_gradients_by_lag.csv', 'LSTM-cuối kỳ', '#3183A7')]:
+                               (FE / 'xai/at_hol/integrated_gradients_by_lag.csv', 'LSTM cải tiến', '#3183A7')]:
         lag = pd.read_csv(path, index_col=0)
         ax.plot(lag.index, lag['DE load'], color=color, lw=2, label=label)
     ax.axvline(-24, color='gray', ls=':', lw=1)

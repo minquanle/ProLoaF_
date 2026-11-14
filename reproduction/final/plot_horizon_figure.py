@@ -37,7 +37,7 @@ def main():
     ax.plot(h, rmse_by_hour(*ens(dl_files)), '--', color='#9AA5B1', lw=2, label='DLinear')
     ax.plot(h, rmse_by_hour(*ens(dlc_files)), ':', color='#6B7785', lw=2.4, label='DLinear + lịch, ngày lễ')
     styles = {'baseline': ('LSTM-chuẩn (giữa kỳ)', '#E48E7E'), 'at': ('+ chuẩn hóa phụ tải Áo', '#8CC5DC'),
-              'at_hol': ('+ cờ ngày lễ = LSTM-cuối kỳ', '#1F6F94')}
+              'at_hol': ('+ cờ ngày lễ = LSTM cải tiến', '#1F6F94')}
     for v, (label, color) in styles.items():
         ax.plot(h, hz[hz.variant == v].RMSE_MW.to_numpy(), '-o', ms=4, color=color, lw=2.4, label=label)
     ax.set_xticks(h)

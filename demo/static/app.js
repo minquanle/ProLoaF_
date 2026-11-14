@@ -16,7 +16,7 @@ async function waitForModel() {
     if (!status.ready) { if (status.error) throw new Error(status.error); setTimeout(waitForModel, 900); return; }
     state.meta = status; $("#dot").parentElement.classList.add("ready"); $("#status-text").textContent = "Checkpoint sẵn sàng";
     $("#loading").classList.add("hidden"); $("#dashboard").classList.remove("hidden"); $("#summary").classList.remove("hidden");
-    const slider = $("#origin-slider"); slider.max = status.origins - 1; slider.value = Math.min(1000, status.origins - 1);
+    const slider = $("#origin-slider"); slider.max = status.origins - 1; const asked = Number(new URLSearchParams(location.search).get("origin")); slider.value = Number.isInteger(asked) && asked > 0 ? Math.min(asked, status.origins - 1) : Math.min(1000, status.origins - 1);
     $("#c-value").textContent = `c = ${status.models.final.c.toFixed(4)}`;
     await loadSummary(); await loadForecast(Number(slider.value));
   } catch (error) {
