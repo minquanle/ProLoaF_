@@ -1,0 +1,96 @@
+2026-11-17 09:26:33 - tensorloader - DEBUG - frame not prepared
+2026-11-17 09:26:33 - datahandler - INFO - No missing data
+2026-11-17 09:26:33 - tensorloader - DEBUG - frame not prepared
+2026-11-17 09:26:33 - datahandler - INFO - No missing data
+2026-11-17 09:26:33 - modelhandler - DEBUG - exploration = False
+2026-11-17 09:26:33 - modelhandler - DEBUG - self.model_class = 'recurrent'
+2026-11-17 09:26:33 - modelhandler - DEBUG - self.model_parameters = {'recurrent': {'core_net': 'torch.nn.LSTM', 'core_layers': 1, 'dropout_fc': 0.4, 'dropout_core': 0.3, 'rel_linear_hidden_size': 1.0, 'rel_core_hidden_size': 1.0, 'relu_leak': 0.1}, 'simple_transformer': {'num_layers': 3, 'dropout': 0.4, 'n_heads': 6}}
+C:\Users\lmq\miniconda3\envs\proloaf-paper-repro\lib\site-packages\torch\nn\modules\rnn.py:67: UserWarning: dropout option adds dropout after all but last recurrent layer, so non-zero dropout expects num_layers greater than 1, but got dropout=0.3 and num_layers=1
+  warnings.warn("dropout option adds dropout after all but last "
+2026-11-17 09:26:33 - loghandler - INFO - Tensorboard log here:	 C:\Nam 4\ProLoaF_\artifacts\final_exam\runs\noat_seed5\runs\2026-11-17 09-26-32\trial_main
+2026-11-17 09:26:33 - tensorloader - DEBUG - tensor already prepared
+2026-11-17 09:26:33 - tensorloader - DEBUG - tensor already prepared
+2026-11-17 09:26:34 - modelhandler - INFO - Begin training...
+epoch 1 train -0.8898 B -1.6005
+2026-11-17 09:28:09 - modelhandler - INFO - Epoch 1/50	 train_loss -8.90e-01	 val_loss -1.60e+00	 elapsed_time 8.42e+01
+epoch 2 train -1.5589 B -1.7635
+2026-11-17 09:29:51 - modelhandler - INFO - Epoch 2/50	 train_loss -1.56e+00	 val_loss -1.76e+00	 elapsed_time 9.30e+01
+epoch 3 train -1.6850 B -1.9417
+2026-11-17 09:31:29 - modelhandler - INFO - Epoch 3/50	 train_loss -1.69e+00	 val_loss -1.94e+00	 elapsed_time 8.59e+01
+epoch 4 train -1.8241 B -2.1226
+2026-11-17 09:33:15 - modelhandler - INFO - Epoch 4/50	 train_loss -1.82e+00	 val_loss -2.12e+00	 elapsed_time 9.59e+01
+epoch 5 train -1.9099 B -2.0520
+2026-11-17 09:34:55 - modelhandler - INFO - EarlyStopping counter: 1 out of 7
+2026-11-17 09:34:55 - modelhandler - INFO - Epoch 5/50	 train_loss -1.91e+00	 val_loss -2.05e+00	 elapsed_time 9.03e+01
+epoch 6 train -1.9780 B -2.2261
+2026-11-17 09:36:45 - modelhandler - INFO - Epoch 6/50	 train_loss -1.98e+00	 val_loss -2.23e+00	 elapsed_time 9.91e+01
+epoch 7 train -2.0297 B -2.2832
+2026-11-17 09:38:33 - modelhandler - INFO - Epoch 7/50	 train_loss -2.03e+00	 val_loss -2.28e+00	 elapsed_time 9.75e+01
+epoch 8 train -2.0803 B -2.2266
+2026-11-17 09:40:28 - modelhandler - INFO - EarlyStopping counter: 1 out of 7
+2026-11-17 09:40:28 - modelhandler - INFO - Epoch 8/50	 train_loss -2.08e+00	 val_loss -2.23e+00	 elapsed_time 1.03e+02
+epoch 9 train -2.1233 B -2.3896
+2026-11-17 09:42:27 - modelhandler - INFO - Epoch 9/50	 train_loss -2.12e+00	 val_loss -2.39e+00	 elapsed_time 1.07e+02
+epoch 10 train -2.1639 B -2.3260
+2026-11-17 09:44:16 - modelhandler - INFO - EarlyStopping counter: 1 out of 7
+2026-11-17 09:44:16 - modelhandler - INFO - Epoch 10/50	 train_loss -2.16e+00	 val_loss -2.33e+00	 elapsed_time 9.70e+01
+epoch 11 train -2.1971 B -2.4498
+2026-11-17 09:46:00 - modelhandler - INFO - Epoch 11/50	 train_loss -2.20e+00	 val_loss -2.45e+00	 elapsed_time 9.39e+01
+epoch 12 train -2.2270 B -2.3851
+2026-11-17 09:47:38 - modelhandler - INFO - EarlyStopping counter: 1 out of 7
+2026-11-17 09:47:38 - modelhandler - INFO - Epoch 12/50	 train_loss -2.23e+00	 val_loss -2.39e+00	 elapsed_time 8.78e+01
+epoch 13 train -2.2433 B -2.5150
+2026-11-17 09:49:16 - modelhandler - INFO - Epoch 13/50	 train_loss -2.24e+00	 val_loss -2.52e+00	 elapsed_time 8.94e+01
+epoch 14 train -2.2624 B -2.5494
+2026-11-17 09:50:52 - modelhandler - INFO - Epoch 14/50	 train_loss -2.26e+00	 val_loss -2.55e+00	 elapsed_time 8.59e+01
+epoch 15 train -2.2812 B -2.5504
+2026-11-17 09:52:27 - modelhandler - INFO - Epoch 15/50	 train_loss -2.28e+00	 val_loss -2.55e+00	 elapsed_time 8.59e+01
+epoch 16 train -2.3013 B -2.5514
+2026-11-17 09:54:05 - modelhandler - INFO - Epoch 16/50	 train_loss -2.30e+00	 val_loss -2.55e+00	 elapsed_time 8.74e+01
+epoch 17 train -2.3165 B -2.6084
+2026-11-17 09:55:57 - modelhandler - INFO - Epoch 17/50	 train_loss -2.32e+00	 val_loss -2.61e+00	 elapsed_time 9.98e+01
+epoch 18 train -2.3336 B -2.5213
+2026-11-17 09:57:57 - modelhandler - INFO - EarlyStopping counter: 1 out of 7
+2026-11-17 09:57:57 - modelhandler - INFO - Epoch 18/50	 train_loss -2.33e+00	 val_loss -2.52e+00	 elapsed_time 1.09e+02
+epoch 19 train -2.3426 B -2.5587
+2026-11-17 10:00:09 - modelhandler - INFO - EarlyStopping counter: 2 out of 7
+2026-11-17 10:00:09 - modelhandler - INFO - Epoch 19/50	 train_loss -2.34e+00	 val_loss -2.56e+00	 elapsed_time 1.19e+02
+epoch 20 train -2.3570 B -2.6278
+2026-11-17 10:02:09 - modelhandler - INFO - Epoch 20/50	 train_loss -2.36e+00	 val_loss -2.63e+00	 elapsed_time 1.08e+02
+epoch 21 train -2.3689 B -2.5951
+2026-11-17 10:03:55 - modelhandler - INFO - EarlyStopping counter: 1 out of 7
+2026-11-17 10:03:55 - modelhandler - INFO - Epoch 21/50	 train_loss -2.37e+00	 val_loss -2.60e+00	 elapsed_time 9.70e+01
+epoch 22 train -2.3760 B -2.6472
+2026-11-17 10:05:38 - modelhandler - INFO - Epoch 22/50	 train_loss -2.38e+00	 val_loss -2.65e+00	 elapsed_time 9.08e+01
+epoch 23 train -2.3829 B -2.6291
+2026-11-17 10:07:26 - modelhandler - INFO - EarlyStopping counter: 1 out of 7
+2026-11-17 10:07:26 - modelhandler - INFO - Epoch 23/50	 train_loss -2.38e+00	 val_loss -2.63e+00	 elapsed_time 9.70e+01
+epoch 24 train -2.3930 B -2.6853
+2026-11-17 10:09:14 - modelhandler - INFO - Epoch 24/50	 train_loss -2.39e+00	 val_loss -2.69e+00	 elapsed_time 9.77e+01
+epoch 25 train -2.4035 B -2.4875
+2026-11-17 10:10:59 - modelhandler - INFO - EarlyStopping counter: 1 out of 7
+2026-11-17 10:10:59 - modelhandler - INFO - Epoch 25/50	 train_loss -2.40e+00	 val_loss -2.49e+00	 elapsed_time 9.48e+01
+epoch 26 train -2.4095 B -2.6692
+2026-11-17 10:12:38 - modelhandler - INFO - EarlyStopping counter: 2 out of 7
+2026-11-17 10:12:38 - modelhandler - INFO - Epoch 26/50	 train_loss -2.41e+00	 val_loss -2.67e+00	 elapsed_time 9.07e+01
+epoch 27 train -2.4201 B -2.6032
+2026-11-17 10:14:23 - modelhandler - INFO - EarlyStopping counter: 3 out of 7
+2026-11-17 10:14:23 - modelhandler - INFO - Epoch 27/50	 train_loss -2.42e+00	 val_loss -2.60e+00	 elapsed_time 9.39e+01
+epoch 28 train -2.4256 B -2.6785
+2026-11-17 10:16:01 - modelhandler - INFO - EarlyStopping counter: 4 out of 7
+2026-11-17 10:16:01 - modelhandler - INFO - Epoch 28/50	 train_loss -2.43e+00	 val_loss -2.68e+00	 elapsed_time 8.89e+01
+epoch 29 train -2.4299 B -2.6691
+2026-11-17 10:17:47 - modelhandler - INFO - EarlyStopping counter: 5 out of 7
+2026-11-17 10:17:47 - modelhandler - INFO - Epoch 29/50	 train_loss -2.43e+00	 val_loss -2.67e+00	 elapsed_time 9.55e+01
+epoch 30 train -2.4385 B -2.6544
+2026-11-17 10:19:18 - modelhandler - INFO - EarlyStopping counter: 6 out of 7
+2026-11-17 10:19:18 - modelhandler - INFO - Epoch 30/50	 train_loss -2.44e+00	 val_loss -2.65e+00	 elapsed_time 8.23e+01
+epoch 31 train -2.4468 B -2.6386
+2026-11-17 10:20:51 - modelhandler - INFO - EarlyStopping counter: 7 out of 7
+2026-11-17 10:20:51 - modelhandler - INFO - Epoch 31/50	 train_loss -2.45e+00	 val_loss -2.64e+00	 elapsed_time 8.17e+01
+2026-11-17 10:20:51 - modelhandler - INFO - No improvement has been achieved in the last 7 epochs. Aborting training and loading best model.
+2026-11-17 10:20:51 - tensorloader - DEBUG - tensor already prepared
+2026-11-17 10:21:00 - tensorloader - DEBUG - frame not prepared
+2026-11-17 10:21:00 - datahandler - INFO - No missing data
+2026-11-17 10:21:00 - tensorloader - DEBUG - tensor already prepared
+DONE {"RMSE_MW": 2212.648421935737, "MAE_MW": 1350.718971658498, "PICP_percent": 98.4361062633314}

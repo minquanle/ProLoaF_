@@ -1,0 +1,251 @@
+{
+  "variant": "baseline",
+  "seeds": {
+    "1": {
+      "gates": {
+        "saturated_input_gate": 1.0,
+        "saturated_forget_gate": 1.0,
+        "saturated_output_gate": 1.0,
+        "saturated_cell_candidate": 1.0,
+        "mean_abs_preactivation": 264.6306850926406,
+        "input_preactivation_share": {
+          "AT load": 0.9998016357421875,
+          "DE load": 8.50037467898801e-05,
+          "DE temperature": 7.428441313095391e-05,
+          "DE radiation direct": 1.5977491784724407e-05,
+          "DE radiation diffuse": 2.306390342710074e-05
+        }
+      },
+      "ig_share_percent": {
+        "AT load": 0.22249449975788593,
+        "DE load": 0.002393872091488447,
+        "DE temperature": 0.0028181042580399662,
+        "DE radiation direct": 0.002107146428897977,
+        "DE radiation diffuse": 0.0004135566541663138,
+        "calendar (decoder)": 99.76977109909058
+      },
+      "rmse_full_MW": 3652.552001953125,
+      "deletion_encoder": {
+        "10": {
+          "top_IG_MW": 3653.495849609375,
+          "random_mean_MW": 3652.6696044921873,
+          "random_std_MW": 0.06829740058314437,
+          "random_max_MW": 3652.8515625
+        },
+        "50": {
+          "top_IG_MW": 3657.279296875,
+          "random_mean_MW": 3653.287219238281,
+          "random_std_MW": 0.3131539128807022,
+          "random_max_MW": 3654.0146484375
+        },
+        "200": {
+          "top_IG_MW": 3665.5595703125,
+          "random_mean_MW": 3655.7285766601562,
+          "random_std_MW": 0.2623560973664634,
+          "random_max_MW": 3656.296875
+        }
+      }
+    },
+    "2": {
+      "gates": {
+        "saturated_input_gate": 0.9982082912711059,
+        "saturated_forget_gate": 0.9871105215176433,
+        "saturated_output_gate": 1.0,
+        "saturated_cell_candidate": 1.0,
+        "mean_abs_preactivation": 290.04585546376757,
+        "input_preactivation_share": {
+          "AT load": 0.9997929930686951,
+          "DE load": 9.681725350674242e-05,
+          "DE temperature": 6.959232996450737e-05,
+          "DE radiation direct": 1.6519014025107026e-05,
+          "DE radiation diffuse": 2.4113036488415673e-05
+        }
+      },
+      "ig_share_percent": {
+        "AT load": 4.401956498622894,
+        "DE load": 0.47031515277922153,
+        "DE temperature": 0.013843095803167671,
+        "DE radiation direct": 0.22636775393038988,
+        "DE radiation diffuse": 0.15400357078760862,
+        "calendar (decoder)": 94.73350644111633
+      },
+      "rmse_full_MW": 3259.89111328125,
+      "deletion_encoder": {
+        "10": {
+          "top_IG_MW": 3277.704833984375,
+          "random_mean_MW": 3264.198486328125,
+          "random_std_MW": 1.8202904695806765,
+          "random_max_MW": 3267.982177734375
+        },
+        "50": {
+          "top_IG_MW": 3401.951416015625,
+          "random_mean_MW": 3281.457373046875,
+          "random_std_MW": 5.499682058768098,
+          "random_max_MW": 3294.993896484375
+        },
+        "200": {
+          "top_IG_MW": 3788.8779296875,
+          "random_mean_MW": 3372.3759521484376,
+          "random_std_MW": 11.849071769761032,
+          "random_max_MW": 3393.889892578125
+        }
+      },
+      "deletion_all_cells": {
+        "cells_total": 1839,
+        "10": {
+          "top_IG_MW": 3480.001953125,
+          "top_cells_in_decoder": 10,
+          "random_mean_MW": 3285.7569946289063,
+          "random_std_MW": 18.39367654762985
+        },
+        "50": {
+          "top_IG_MW": 4747.23291015625,
+          "top_cells_in_decoder": 50,
+          "random_mean_MW": 3375.6721313476564,
+          "random_std_MW": 33.36870961715331
+        },
+        "200": {
+          "top_IG_MW": 6752.31787109375,
+          "top_cells_in_decoder": 200,
+          "random_mean_MW": 3782.0068359375,
+          "random_std_MW": 61.82087786625802
+        }
+      }
+    },
+    "3": {
+      "gates": {
+        "saturated_input_gate": 1.0,
+        "saturated_forget_gate": 0.9838443479570401,
+        "saturated_output_gate": 0.9811595520194696,
+        "saturated_cell_candidate": 1.0,
+        "mean_abs_preactivation": 306.3530981362272,
+        "input_preactivation_share": {
+          "AT load": 0.9998191595077515,
+          "DE load": 7.84778967499733e-05,
+          "DE temperature": 6.64977851556614e-05,
+          "DE radiation direct": 1.3973236491438001e-05,
+          "DE radiation diffuse": 2.1891906726523302e-05
+        }
+      },
+      "ig_share_percent": {
+        "AT load": 4.922570660710335,
+        "DE load": 0.6466919090598822,
+        "DE temperature": 0.3388967365026474,
+        "DE radiation direct": 0.054670084500685334,
+        "DE radiation diffuse": 0.04865735536441207,
+        "calendar (decoder)": 93.98850798606873
+      },
+      "rmse_full_MW": 3151.7529296875,
+      "deletion_encoder": {
+        "10": {
+          "top_IG_MW": 3655.139892578125,
+          "random_mean_MW": 3155.32451171875,
+          "random_std_MW": 12.939729848898294,
+          "random_max_MW": 3211.587158203125
+        },
+        "50": {
+          "top_IG_MW": 3970.82421875,
+          "random_mean_MW": 3160.1338012695314,
+          "random_std_MW": 12.500338700825804,
+          "random_max_MW": 3211.619384765625
+        },
+        "200": {
+          "top_IG_MW": 3998.596435546875,
+          "random_mean_MW": 3254.786169433594,
+          "random_std_MW": 61.34817127652965,
+          "random_max_MW": 3379.241943359375
+        }
+      }
+    },
+    "4": {
+      "gates": {
+        "saturated_input_gate": 1.0,
+        "saturated_forget_gate": 1.0,
+        "saturated_output_gate": 1.0,
+        "saturated_cell_candidate": 1.0,
+        "mean_abs_preactivation": 291.5177392245961,
+        "input_preactivation_share": {
+          "AT load": 0.9998083710670471,
+          "DE load": 8.426456042798236e-05,
+          "DE temperature": 6.802197458455339e-05,
+          "DE radiation direct": 1.6406298527726904e-05,
+          "DE radiation diffuse": 2.2945014279684983e-05
+        }
+      },
+      "ig_share_percent": {
+        "AT load": 0.024302325618918985,
+        "DE load": 4.522135554907436e-05,
+        "DE temperature": 1.3940140775048349e-05,
+        "DE radiation direct": 0.0003051381781915552,
+        "DE radiation diffuse": 6.650128057117399e-05,
+        "calendar (decoder)": 99.97527003288269
+      },
+      "rmse_full_MW": 3613.53515625,
+      "deletion_encoder": {
+        "10": {
+          "top_IG_MW": 3613.712646484375,
+          "random_mean_MW": 3613.564697265625,
+          "random_std_MW": 0.01848516993615042,
+          "random_max_MW": 3613.600830078125
+        },
+        "50": {
+          "top_IG_MW": 3614.341064453125,
+          "random_mean_MW": 3613.693713378906,
+          "random_std_MW": 0.03834915949647694,
+          "random_max_MW": 3613.786376953125
+        },
+        "200": {
+          "top_IG_MW": 3615.721923828125,
+          "random_mean_MW": 3614.15205078125,
+          "random_std_MW": 0.06263435228455186,
+          "random_max_MW": 3614.239013671875
+        }
+      }
+    },
+    "5": {
+      "gates": {
+        "saturated_input_gate": 1.0,
+        "saturated_forget_gate": 1.0,
+        "saturated_output_gate": 0.9805224205360932,
+        "saturated_cell_candidate": 1.0,
+        "mean_abs_preactivation": 271.7953510933182,
+        "input_preactivation_share": {
+          "AT load": 0.9997920989990234,
+          "DE load": 9.205563401337713e-05,
+          "DE temperature": 7.445368100889027e-05,
+          "DE radiation direct": 1.6190228052437305e-05,
+          "DE radiation diffuse": 2.5138595447060652e-05
+        }
+      },
+      "ig_share_percent": {
+        "AT load": 0.1872788416221738,
+        "DE load": 0.029297044966369867,
+        "DE temperature": 0.013549944560509175,
+        "DE radiation direct": 0.00011431113762228051,
+        "DE radiation diffuse": 0.0010481746357982047,
+        "calendar (decoder)": 99.76871609687805
+      },
+      "rmse_full_MW": 3599.89892578125,
+      "deletion_encoder": {
+        "10": {
+          "top_IG_MW": 3633.45166015625,
+          "random_mean_MW": 3600.112097167969,
+          "random_std_MW": 0.9289125026014406,
+          "random_max_MW": 3604.1611328125
+        },
+        "50": {
+          "top_IG_MW": 3633.4580078125,
+          "random_mean_MW": 3601.9357299804688,
+          "random_std_MW": 6.003670084508501,
+          "random_max_MW": 3627.272216796875
+        },
+        "200": {
+          "top_IG_MW": 3633.4580078125,
+          "random_mean_MW": 3606.337512207031,
+          "random_std_MW": 10.651429975259353,
+          "random_max_MW": 3627.8623046875
+        }
+      }
+    }
+  }
+}

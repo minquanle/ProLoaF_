@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[2]
 FE = ROOT / 'artifacts/final_exam'
 SCALE = 46242.0
 SEEDS = [1, 2, 3, 4, 5]
-plt.rcParams.update({'font.size': 12, 'axes.spines.top': False, 'axes.spines.right': False})
+plt.rcParams.update({'font.size': 15, 'axes.spines.top': False, 'axes.spines.right': False})
 
 
 def rmse_by_hour(y, mu):
@@ -33,7 +33,7 @@ def main():
     dlc_files = [FE / 'dlinear_calendar' / f'test_predictions_seed{s}.npz' for s in SEEDS]
     hz = pd.read_csv(FE / 'results/per_horizon.csv')
     h = np.arange(1, 25)
-    fig, ax = plt.subplots(figsize=(12, 4.6))
+    fig, ax = plt.subplots(figsize=(12, 5.6))
     ax.plot(h, rmse_by_hour(*ens(dl_files)), '--', color='#9AA5B1', lw=2, label='DLinear')
     ax.plot(h, rmse_by_hour(*ens(dlc_files)), ':', color='#6B7785', lw=2.4, label='DLinear + lịch, ngày lễ')
     styles = {'baseline': ('LSTM-chuẩn (giữa kỳ)', '#E48E7E'), 'at': ('+ chuẩn hóa phụ tải Áo', '#8CC5DC'),
@@ -45,7 +45,7 @@ def main():
     ax.set_ylabel('RMSE (MW)')
     ax.set_ylim(0, None)
     ax.grid(axis='y', alpha=0.3)
-    ax.legend(ncol=3, frameon=False, loc='upper center', bbox_to_anchor=(0.5, 1.16))
+    ax.legend(ncol=3, frameon=False, loc='upper center', bbox_to_anchor=(0.5, 1.22))
     fig.tight_layout()
     out = FE / 'figures/horizon_rmse.png'
     fig.savefig(out, dpi=200)

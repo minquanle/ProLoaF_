@@ -90,7 +90,7 @@ def main():
                  'RMSE_std_MW': np.std(dl_rmse, ddof=1)})
     rows.append({'variant': 'DLinear', 'model': 'ensemble 5 seeds',
                  **{k: v for k, v in interval_metrics(y, dl_ens, np.ones_like(y), 0).items() if k in ('RMSE_MW', 'MAE_MW')}})
-    for variant in ['baseline', 'at', 'at_hol']:
+    for variant in ['baseline', 'at', 'hol', 'noat', 'at_hol']:
         test, val = load(variant, 'test'), load(variant, 'validation')
         if test is None or val is None:
             print('skip', variant, '(runs not finished)')
@@ -152,6 +152,24 @@ def main():
         rmse_hol = [interval_metrics(p['actual_scaled'], p['mean_scaled'], p['sigma_scaled'], 1)['RMSE_MW'] for p in load('at_hol', 'test')]
         welch = stats.ttest_ind(rmse_hol, rmse_at, equal_var=False)
         tests['at_hol']['single_seed_RMSE_vs_at_welch_p'] = float(welch.pvalue)
+    # control variants added after review: full 2x2 design (C1 x C2) and the model without Austrian load
+    def ens_mean(v):
+        return np.load(OUT / f'{v}_ensemble_test.npz')['mean_scaled']
+    for a, b in [('hol', 'baseline'), ('at_hol', 'hol'), ('noat', 'baseline'), ('at', 'noat')]:
+        if a in tests and b in tests:
+            tests[a][f'ensemble_vs_{b}_ensemble_DM'] = daily_dm(y - ens_mean(a), y - ens_mean(b))
+    perh_dir = ROOT / 'artifacts/final_exam/dlinear_calendar_perh'
+    if (perh_dir / 'test_summary_per_seed.csv').exists() and 'at_hol' in tests:
+        perh = [dict(np.load(perh_dir / f'test_predictions_seed{s}.npz')) for s in SEEDS]
+        perh_rmse = [float(np.sqrt(np.mean((d['actual_scaled'] - d['mean_scaled']) ** 2)) * SCALE) for d in perh]
+        perh_ens = np.mean([d['mean_scaled'] for d in perh], axis=0)
+        err = np.abs(y - perh_ens) * SCALE
+        rows.append({'variant': 'DLinear+calendar per hour', 'model': 'single seeds (mean)', 'RMSE_MW': np.mean(perh_rmse),
+                     'RMSE_std_MW': np.std(perh_rmse, ddof=1)})
+        rows.append({'variant': 'DLinear+calendar per hour', 'model': 'ensemble 5 seeds',
+                     'RMSE_MW': float(np.sqrt(np.mean((y - perh_ens) ** 2)) * SCALE), 'MAE_MW': float(err.mean()),
+                     'MAE_holiday_MW': float(err[holiday].mean()), 'MAE_other_MW': float(err[~holiday].mean())})
+        tests['at_hol']['ensemble_vs_DLinear_calendar_per_hour_ensemble_DM'] = daily_dm(y - ens_mean('at_hol'), y - perh_ens)
     table = pd.DataFrame(rows)
     table.to_csv(OUT / 'summary.csv', index=False)
     pd.DataFrame(horizon_rows).to_csv(OUT / 'per_horizon.csv', index=False)

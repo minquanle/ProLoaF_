@@ -67,7 +67,8 @@ def dm(err_a, err_b, lags=HAC_LAGS):
 def main():
     tests = json.loads((OUT / 'tests.json').read_text(encoding='utf-8'))
     masks = groups()
-    preds = {v: np.load(OUT / f'{v}_ensemble_test.npz') for v in ['baseline', 'at', 'at_hol']}
+    preds = {v: np.load(OUT / f'{v}_ensemble_test.npz') for v in ['baseline', 'at', 'hol', 'noat', 'at_hol']
+             if (OUT / f'{v}_ensemble_test.npz').exists() and v in tests}
     y = preds['at_hol']['actual_scaled']
     rows = []
     for name, mask in masks.items():
@@ -94,6 +95,13 @@ def main():
     pairs = {'at vs baseline (C1)': (m['at'], m['baseline']), 'at_hol vs at (C2)': (m['at_hol'], m['at']),
              'at_hol vs baseline': (m['at_hol'], m['baseline']), 'at_hol vs DLinear': (m['at_hol'], dl),
              'at_hol vs DLinear+calendar': (m['at_hol'], dlc), 'baseline vs DLinear': (m['baseline'], dl)}
+    for name, (a, b) in {'hol vs baseline (C2 without C1)': ('hol', 'baseline'), 'at_hol vs hol (C1 with C2)': ('at_hol', 'hol'),
+                         'noat vs baseline': ('noat', 'baseline'), 'at vs noat': ('at', 'noat')}.items():
+        if a in m and b in m:
+            pairs[name] = (m[a], m[b])
+    perh = ROOT / 'artifacts/final_exam/dlinear_calendar_perh'
+    if (perh / 'test_predictions_seed5.npz').exists():
+        pairs['at_hol vs DLinear+calendar per hour'] = (m['at_hol'], np.mean([np.load(perh / f'test_predictions_seed{s}.npz')['mean_scaled'] for s in SEEDS], axis=0))
     robust = {k: dm(y - a, y - b) for k, (a, b) in pairs.items()}
     (OUT / 'dm_robust.json').write_text(json.dumps(robust, indent=2), encoding='utf-8')
     for k, v in robust.items():

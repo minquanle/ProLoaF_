@@ -46,8 +46,11 @@ Cách đọc bảng:
 | **LSTM cải tiến, ensemble + hiệu chỉnh** | **1.571** | **95,2%** | **5.930** | **1.302** |
 | DLinear, ensemble | 3.514 | – | – | – |
 | DLinear + cùng cột lịch, ngày lễ, ensemble | 2.542 | – | – | 4.192 |
+| DLinear + cùng cột lịch, trọng số riêng từng giờ, ensemble | 2.469 | – | – | 3.905 |
 
-Sau khi sửa, XAI cho thấy mô hình đã dùng phụ tải Đức của những giờ gần nhất và cùng giờ hôm trước. Mọi cải tiến đều có ý nghĩa thống kê (Diebold–Mariano trên 359 ngày, p < 0,005; với phương sai Newey–West, p < 0,01). Demo (`python .\demo\run_demo.py`) cho chọn LSTM-gốc của giữa kỳ hoặc LSTM cải tiến và hiển thị giải thích Integrated Gradients cho từng dự báo; thêm `?origin=8425` vào địa chỉ để mở thẳng một thời điểm. Chi tiết ở `artifacts/final_exam/KET_QUA_CUOI_KY.md`.
+Hai biến thể đối chứng hoàn thành thiết kế 2×2 và kiểm tra cơ chế: `hol` (chỉ cờ ngày lễ, RMSE 2.341) và `noat` (bỏ hẳn phụ tải Áo, RMSE 2.184). Chuẩn hóa phụ tải Áo giảm RMSE 33–37% và cờ ngày lễ giảm 26–31%, dù đứng một mình hay đi cùng nhau; bỏ hẳn phụ tải Áo cho kết quả gần bằng chuẩn hóa nó, và các cổng LSTM của encoder cũ bão hòa gần như hoàn toàn.
+
+Sau khi sửa, XAI cho thấy mô hình đã dùng phụ tải Đức của những giờ gần nhất và cùng giờ hôm trước. Mọi cải tiến có ý nghĩa thống kê (Diebold–Mariano, cả với phương sai Newey–West) ở cả 24 mốc giờ phát hành dự báo. Riêng so sánh LSTM-chuẩn với DLinear không bền (chỉ 12/24 mốc), nên hai mô hình này được coi là ngang nhau. Demo (`python .\demo\run_demo.py`) cho chọn LSTM-gốc của giữa kỳ hoặc LSTM cải tiến và hiển thị giải thích Integrated Gradients cho từng dự báo; thêm `?origin=8425` vào địa chỉ để mở thẳng một thời điểm. Chi tiết ở `artifacts/final_exam/KET_QUA_CUOI_KY.md`.
 
 ```powershell
 python .\reproduction\final\diagnose_on_validation.py   # chẩn đoán trên 2018
@@ -55,7 +58,10 @@ python .\reproduction\final\evaluate_improvements.py    # bảng kết quả và
 python .\reproduction\final\xai_analysis.py at_hol      # XAI cho mô hình cuối kỳ
 python .\reproduction\final\run_dlinear_calendar.py     # DLinear thêm cột lịch (khoảng 2 phút)
 python .\reproduction\final\extra_checks.py            # độ phủ theo mùa, loại ngày; DM với Newey–West
+python .\reproduction\final\review_checks.py           # DM theo 24 mốc giờ, MAPE, CRPS, ngày sau lễ
+python .\reproduction\final\xai_extra.py baseline at hol noat at_hol   # cổng LSTM, IG, deletion cho 5 seed
 bash reproduction/final/run_all_variants.sh <python>    # huấn luyện lại (khoảng 3–4 giờ)
+bash reproduction/final/run_control_variants.sh <python> # hai biến thể đối chứng hol, noat (khoảng 1,5 giờ)
 ```
 
 ## Cấu trúc thư mục

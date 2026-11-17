@@ -1,0 +1,24 @@
+{
+  "state": "complete",
+  "variant": "hol",
+  "seed": 3,
+  "pid": 27448,
+  "epoch": 24,
+  "best_epoch": 17,
+  "best_validation_B_loss": -2.434424891400693,
+  "actual_epochs": 24,
+  "wall_seconds": 3309.270219,
+  "test_summary": {
+    "c": 1.0,
+    "PICP_percent": 98.55633120031025,
+    "abs_coverage_error_pp": 3.556331200310254,
+    "Sharpness": 0.2724657952785492,
+    "MIS_standard_95": 0.29866790771484375,
+    "RMSE": 0.0504675917327404,
+    "MAE": 0.03753329813480377,
+    "RMSE_MW": 2333.7223769053817,
+    "MAE_MW": 1735.614772349596,
+    "Sharpness_MW": 12599.363305270672,
+    "MIS_standard_95_MW": 13811.001388549805
+  }
+}

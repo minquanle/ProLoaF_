@@ -1,0 +1,251 @@
+{
+  "variant": "at_hol",
+  "seeds": {
+    "1": {
+      "gates": {
+        "saturated_input_gate": 0.08014907475662272,
+        "saturated_forget_gate": 0.019829301804729395,
+        "saturated_output_gate": 0.08037409761153973,
+        "saturated_cell_candidate": 0.08625938225898663,
+        "mean_abs_preactivation": 1.199257711974942,
+        "input_preactivation_share": {
+          "AT load": 0.32944920659065247,
+          "DE load": 0.3863321542739868,
+          "DE temperature": 0.17512640357017517,
+          "DE radiation direct": 0.047172144055366516,
+          "DE radiation diffuse": 0.0619201622903347
+        }
+      },
+      "ig_share_percent": {
+        "AT load": 3.6910101771354675,
+        "DE load": 15.340779721736908,
+        "DE temperature": 1.8133245408535004,
+        "DE radiation direct": 0.8003374561667442,
+        "DE radiation diffuse": 0.7482509594410658,
+        "calendar (decoder)": 77.60629057884216
+      },
+      "rmse_full_MW": 1681.3126220703125,
+      "deletion_encoder": {
+        "10": {
+          "top_IG_MW": 3997.889404296875,
+          "random_mean_MW": 1707.3670166015625,
+          "random_std_MW": 85.3386037305896,
+          "random_max_MW": 2077.19580078125
+        },
+        "50": {
+          "top_IG_MW": 4817.1591796875,
+          "random_mean_MW": 1865.3535888671875,
+          "random_std_MW": 173.2940849198577,
+          "random_max_MW": 2367.249267578125
+        },
+        "200": {
+          "top_IG_MW": 5043.6123046875,
+          "random_mean_MW": 2285.173583984375,
+          "random_std_MW": 309.37682271096554,
+          "random_max_MW": 3229.07958984375
+        }
+      }
+    },
+    "2": {
+      "gates": {
+        "saturated_input_gate": 0.1202727564205958,
+        "saturated_forget_gate": 0.040855410778863344,
+        "saturated_output_gate": 0.11899939968609441,
+        "saturated_cell_candidate": 0.03955638353066633,
+        "mean_abs_preactivation": 1.2149736616684466,
+        "input_preactivation_share": {
+          "AT load": 0.2522219121456146,
+          "DE load": 0.42034223675727844,
+          "DE temperature": 0.19915065169334412,
+          "DE radiation direct": 0.05608879402279854,
+          "DE radiation diffuse": 0.07219644635915756
+        }
+      },
+      "ig_share_percent": {
+        "AT load": 1.2043077498674393,
+        "DE load": 14.023701846599579,
+        "DE temperature": 1.3890665024518967,
+        "DE radiation direct": 0.5447064060717821,
+        "DE radiation diffuse": 0.9042936377227306,
+        "calendar (decoder)": 81.93392753601074
+      },
+      "rmse_full_MW": 1569.6531982421875,
+      "deletion_encoder": {
+        "10": {
+          "top_IG_MW": 4247.1240234375,
+          "random_mean_MW": 1614.4398864746095,
+          "random_std_MW": 107.0972066908063,
+          "random_max_MW": 2007.0230712890625
+        },
+        "50": {
+          "top_IG_MW": 5033.755859375,
+          "random_mean_MW": 1698.2617065429688,
+          "random_std_MW": 131.69920267212717,
+          "random_max_MW": 2027.2454833984375
+        },
+        "200": {
+          "top_IG_MW": 5118.68701171875,
+          "random_mean_MW": 2493.3755310058596,
+          "random_std_MW": 522.5482030336794,
+          "random_max_MW": 3350.550537109375
+        }
+      },
+      "deletion_all_cells": {
+        "cells_total": 1887,
+        "10": {
+          "top_IG_MW": 3683.006103515625,
+          "top_cells_in_decoder": 6,
+          "random_mean_MW": 1606.0340576171875,
+          "random_std_MW": 22.700942026560085
+        },
+        "50": {
+          "top_IG_MW": 5038.42529296875,
+          "top_cells_in_decoder": 35,
+          "random_mean_MW": 1811.0698608398438,
+          "random_std_MW": 142.4115458670881
+        },
+        "200": {
+          "top_IG_MW": 7265.12548828125,
+          "top_cells_in_decoder": 170,
+          "random_mean_MW": 2475.873400878906,
+          "random_std_MW": 289.1738959521627
+        }
+      }
+    },
+    "3": {
+      "gates": {
+        "saturated_input_gate": 0.14345334948485616,
+        "saturated_forget_gate": 0.019927359007926165,
+        "saturated_output_gate": 0.10338216569895546,
+        "saturated_cell_candidate": 0.005998605432186424,
+        "mean_abs_preactivation": 1.2061038916411042,
+        "input_preactivation_share": {
+          "AT load": 0.27942952513694763,
+          "DE load": 0.41690000891685486,
+          "DE temperature": 0.175481915473938,
+          "DE radiation direct": 0.05406571552157402,
+          "DE radiation diffuse": 0.07412293553352356
+        }
+      },
+      "ig_share_percent": {
+        "AT load": 1.6020601615309715,
+        "DE load": 12.054681777954102,
+        "DE temperature": 1.4058994129300117,
+        "DE radiation direct": 0.5630578845739365,
+        "DE radiation diffuse": 1.1501411907374859,
+        "calendar (decoder)": 83.22415947914124
+      },
+      "rmse_full_MW": 1661.3658447265625,
+      "deletion_encoder": {
+        "10": {
+          "top_IG_MW": 4285.92236328125,
+          "random_mean_MW": 1668.516778564453,
+          "random_std_MW": 12.258379333917546,
+          "random_max_MW": 1703.9154052734375
+        },
+        "50": {
+          "top_IG_MW": 4904.40478515625,
+          "random_mean_MW": 1801.7854736328125,
+          "random_std_MW": 144.79037438313978,
+          "random_max_MW": 2087.60888671875
+        },
+        "200": {
+          "top_IG_MW": 4851.73779296875,
+          "random_mean_MW": 2418.9670227050783,
+          "random_std_MW": 412.40244979310404,
+          "random_max_MW": 3548.261474609375
+        }
+      }
+    },
+    "4": {
+      "gates": {
+        "saturated_input_gate": 0.06195668125094301,
+        "saturated_forget_gate": 0.04469028147266937,
+        "saturated_output_gate": 0.06934335169447332,
+        "saturated_cell_candidate": 0.01064129206537052,
+        "mean_abs_preactivation": 1.1384543783607937,
+        "input_preactivation_share": {
+          "AT load": 0.2772829532623291,
+          "DE load": 0.4283757507801056,
+          "DE temperature": 0.1729373037815094,
+          "DE radiation direct": 0.05738731473684311,
+          "DE radiation diffuse": 0.0640166774392128
+        }
+      },
+      "ig_share_percent": {
+        "AT load": 2.0996352657675743,
+        "DE load": 13.9335498213768,
+        "DE temperature": 1.9274279475212097,
+        "DE radiation direct": 0.6366631481796503,
+        "DE radiation diffuse": 1.3753019273281097,
+        "calendar (decoder)": 80.02741932868958
+      },
+      "rmse_full_MW": 1526.8497314453125,
+      "deletion_encoder": {
+        "10": {
+          "top_IG_MW": 4361.68505859375,
+          "random_mean_MW": 1546.384619140625,
+          "random_std_MW": 61.20770913321,
+          "random_max_MW": 1810.9344482421875
+        },
+        "50": {
+          "top_IG_MW": 5126.9697265625,
+          "random_mean_MW": 1705.97041015625,
+          "random_std_MW": 169.1877643599495,
+          "random_max_MW": 2085.408203125
+        },
+        "200": {
+          "top_IG_MW": 5170.13330078125,
+          "random_mean_MW": 2314.7008361816406,
+          "random_std_MW": 455.5847934637526,
+          "random_max_MW": 3384.197509765625
+        }
+      }
+    },
+    "5": {
+      "gates": {
+        "saturated_input_gate": 0.15562169824954167,
+        "saturated_forget_gate": 0.025577213716151535,
+        "saturated_output_gate": 0.10664233788331182,
+        "saturated_cell_candidate": 0.034794363130452616,
+        "mean_abs_preactivation": 1.2360567452550746,
+        "input_preactivation_share": {
+          "AT load": 0.28422996401786804,
+          "DE load": 0.4147780239582062,
+          "DE temperature": 0.17970918118953705,
+          "DE radiation direct": 0.057923100888729095,
+          "DE radiation diffuse": 0.06335968524217606
+        }
+      },
+      "ig_share_percent": {
+        "AT load": 1.4162779785692692,
+        "DE load": 15.303859114646912,
+        "DE temperature": 1.976141706109047,
+        "DE radiation direct": 0.7220782339572906,
+        "DE radiation diffuse": 1.033735927194357,
+        "calendar (decoder)": 79.54790592193604
+      },
+      "rmse_full_MW": 1623.112060546875,
+      "deletion_encoder": {
+        "10": {
+          "top_IG_MW": 4396.044921875,
+          "random_mean_MW": 1657.4158020019531,
+          "random_std_MW": 85.41905432686424,
+          "random_max_MW": 2012.44921875
+        },
+        "50": {
+          "top_IG_MW": 5143.810546875,
+          "random_mean_MW": 1837.0283508300781,
+          "random_std_MW": 206.00577792561447,
+          "random_max_MW": 2557.06103515625
+        },
+        "200": {
+          "top_IG_MW": 5173.97119140625,
+          "random_mean_MW": 2541.029180908203,
+          "random_std_MW": 333.11057913482966,
+          "random_max_MW": 3156.1884765625
+        }
+      }
+    }
+  }
+}

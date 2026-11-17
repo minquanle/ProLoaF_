@@ -7,6 +7,10 @@ term on the 48 future calendar columns of each forecast hour (24 hour, 12 month,
 Training protocol identical to the midterm DLinear: A train, B early stopping (MSE,
 patience 7, max 50 epochs), Adam lr 1e-3, batch 32, seeds 1-5. C is predicted once.
 Output: artifacts/final_exam/dlinear_calendar/
+
+With --per-horizon the calendar term gets its own weights for each forecast hour,
+    y_hat[h] = DLinear(x)[h] + w_h . cal[h] + b_h
+so a holiday can change the shape of the day (output: dlinear_calendar_perh/).
 """
 import importlib.util
 import json
@@ -27,7 +31,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import proloaf.datahandler as dh  # noqa: E402
 from run_lstm_variant import add_calendar_flags  # noqa: E402
 
-OUT = ROOT / 'artifacts/final_exam/dlinear_calendar'
+PER_HORIZON = '--per-horizon' in sys.argv
+OUT = ROOT / 'artifacts/final_exam' / ('dlinear_calendar_perh' if PER_HORIZON else 'dlinear_calendar')
 TARGET = 'DE_load_actual_entsoe_transparency'
 
 
@@ -35,9 +40,16 @@ class DLinearCalendar(torch.nn.Module):
     def __init__(self, module, n_cal):
         super().__init__()
         self.base = module.Model(SimpleNamespace(seq_len=147, pred_len=24, enc_in=1, individual=False))
-        self.cal = torch.nn.Linear(n_cal, 1)
+        self.per_horizon = PER_HORIZON
+        if PER_HORIZON:
+            self.weight = torch.nn.Parameter(torch.zeros(24, n_cal))
+            self.bias = torch.nn.Parameter(torch.zeros(24))
+        else:
+            self.cal = torch.nn.Linear(n_cal, 1)
 
     def forward(self, x, cal):
+        if self.per_horizon:
+            return self.base(x) + ((cal * self.weight).sum(-1) + self.bias).unsqueeze(-1)
         return self.base(x) + self.cal(cal)
 
 

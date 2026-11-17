@@ -5,6 +5,11 @@ Variants change only the input data, never the architecture or training settings
   at_hol  : as `at`, plus two calendar flags known in advance for the decoder:
             is_holiday (German national holiday, Berlin local date) and
             is_xmas (24 Dec - 1 Jan, Berlin local date).
+Control variants that complete the design (added after review):
+  hol     : holiday flags only; Austrian load stays unscaled as in the original code
+            (the missing cell of the 2x2 design C1 x C2).
+  noat    : Austrian load removed from the encoder inputs (tests whether the unscaled
+            Austrian load harms the model, and whether the series is needed at all).
 
 Outputs per run: checkpoint, epoch history, B and C predictions (.npz), C summary.
 Selection uses B only; C is evaluated once after the checkpoint is frozen.
@@ -47,7 +52,9 @@ def variant_config(config, variant):
     groups = {g['name']: g for g in config['feature_groups']}
     if variant in ('at', 'at_hol'):
         groups['main']['features'] = [AT] + groups['main']['features']
-    if variant == 'at_hol':
+    if variant == 'noat':
+        config['encoder_features'] = [f for f in config['encoder_features'] if f != AT]
+    if variant in ('at_hol', 'hol'):
         groups['aux']['features'] += ['is_holiday', 'is_xmas']
         config['decoder_features'] = config['decoder_features'] + ['is_holiday', 'is_xmas']
     return config
@@ -67,7 +74,7 @@ def predict(model, data):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--variant', choices=['at', 'at_hol'], required=True)
+    parser.add_argument('--variant', choices=['at', 'at_hol', 'hol', 'noat'], required=True)
     parser.add_argument('--seed', type=int, required=True)
     parser.add_argument('--threads', type=int, default=4)
     parser.add_argument('--max-epochs', type=int, default=None, help='only for smoke tests')
@@ -96,7 +103,7 @@ def main():
         if args.max_epochs:
             config['max_epochs'] = args.max_epochs
         frame = pd.read_csv(ROOT / 'paper_source/data/opsd.csv', sep=';', index_col=0, parse_dates=True)
-        if args.variant == 'at_hol':
+        if args.variant in ('at_hol', 'hol'):
             frame = add_calendar_flags(frame)
         train, validation, test = dh.split(frame, [0.6, 0.8])
         assert (len(train), len(validation), len(test)) == (26294, 8765, 8765)
