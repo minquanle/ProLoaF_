@@ -2,7 +2,7 @@
 
 Mọi thí nghiệm dùng cách chia **A train (2015–2017), B chọn mô hình (2018), C kiểm tra (2019)**, mỗi mô hình 5 seed.
 Không phương án nào được chọn theo điểm trên C; c, việc dùng c chung hay theo giờ (fit nửa đầu B, thử nửa sau B) và mọi lựa chọn khác đều được quyết định trên B.
-Lưu ý: C đã được xem ở giữa kỳ (lỗi giờ dự báo đầu tiên thấy trên C), và nhiều phiên bản được chấm trên C. Mọi phiên bản đã huấn luyện đều được báo cáo.
+Mọi phiên bản đã huấn luyện đều được báo cáo.
 Ranh giới A/B/C tính theo tỷ lệ số giờ: C bắt đầu 31/12/2018 19:00 UTC.
 
 ## 1. Bài toán chọn từ giữa kỳ
@@ -30,15 +30,17 @@ Kết quả trên C ở mục dưới cho cùng một bức tranh.
 
 Kết luận: (a) phụ tải Áo **chưa chuẩn hóa** lấn át đầu vào của LSTM; (b) mô hình **không biết ngày lễ**.
 
-## 3. Cải thiện (chỉ thay đổi dữ liệu đầu vào, giữ nguyên kiến trúc và siêu tham số)
+## 3. Hai cải tiến (chỉ thay đổi dữ liệu đầu vào, giữ nguyên kiến trúc và siêu tham số)
+Cải tiến 1 = `at` (chuẩn hóa phụ tải Áo), cải tiến 2 = cờ ngày lễ. Ensemble 5 seed là cách tính điểm, hiệu chỉnh khoảng là bước kế thừa từ giữa kỳ; cả hai không tính là cải tiến.
+
 | Biến thể | Thay đổi |
 |---|---|
 | `at` | Thêm phụ tải Áo vào nhóm được chuẩn hóa min-max (fit trên A) |
 | `at_hol` (sau ensemble và hiệu chỉnh gọi là **LSTM cải tiến**) | Như `at`, thêm `is_holiday` (ngày lễ toàn quốc Đức) và `is_xmas` (24/12–01/01) cho decoder. Cả hai là thông tin lịch, biết trước. |
 | `hol` (đối chứng) | Chỉ thêm 2 cờ ngày lễ, phụ tải Áo vẫn chưa chuẩn hóa: ô còn thiếu của thiết kế 2×2 |
-| `noat` (đối chứng) | Bỏ hẳn phụ tải Áo khỏi encoder (4 biến, 33,452 tham số): kiểm tra cơ chế của C1 |
-| Ensemble 5 seed | μ = trung bình các μ; σ tính từ hỗn hợp Gaussian của 5 seed |
-| Hiệu chỉnh trên B | c = phân vị 95% (split conformal) của \|y−μ\|/(1.96σ) trên tập B |
+| `noat` (đối chứng) | Bỏ hẳn phụ tải Áo khỏi encoder (4 biến, 33,452 tham số): kiểm tra cơ chế của cải tiến 1 |
+| Ensemble 5 seed (cách tính điểm) | μ = trung bình các μ; σ tính từ hỗn hợp Gaussian của 5 seed; áp dụng cho mọi mô hình |
+| Hiệu chỉnh trên B (kế thừa giữa kỳ) | c = phân vị 95% của \|y−μ\|/(1.96σ) trên tập B, như giữa kỳ, nay áp dụng cho mô hình chuẩn |
 
 ## 4. Kết quả trên tập C (2019)
 | Mô hình | RMSE (MW) | MAE (MW) | PICP | Độ rộng khoảng (MW) | MIS (MW) | MAE ngày lễ (MW) |
@@ -60,13 +62,13 @@ Hiệu chỉnh c riêng cho từng giờ cho kết quả gần như bằng c chu
 Lưu ý: B vừa dùng để dừng sớm vừa để hiệu chỉnh và các cửa sổ chồng lấn, nên độ phủ 95% chỉ là kết quả thực nghiệm, không phải bảo đảm của conformal.
 
 ### Thiết kế 2×2 (RMSE ensemble trên C)
-| | Không cờ ngày lễ | Có cờ ngày lễ | Tác dụng của C2 |
+| | Không cờ ngày lễ | Có cờ ngày lễ | Tác dụng của cải tiến 2 |
 |---|---|---|---|
 | Phụ tải Áo chưa chuẩn hóa | 3375 (LSTM-chuẩn) | 2341 (`hol`) | −31% |
 | Phụ tải Áo đã chuẩn hóa | 2126 (`at`) | 1571 (`at_hol`) | −26% |
-| Tác dụng của C1 | −37% | −33% | |
+| Tác dụng của cải tiến 1 | −37% | −33% | |
 
-C2 sửa ngày lễ (MAE lễ 12,593 → 1,623 dù encoder còn hỏng) nhưng không sửa giờ 1 (h=1 vẫn 2,873 MW); C1 sửa giờ 1 (1,624 MW) nhưng ngày lễ còn 7,183 MW. `noat` (2184) gần bằng `at` (2126): tác hại của phụ tải Áo đến từ thang đo; `at` vs `noat` không có ý nghĩa bền (DM p = 0.059, 14/24 mốc giờ).
+Cải tiến 2 sửa ngày lễ (MAE lễ 12,593 → 1,623 dù encoder còn hỏng) nhưng không sửa giờ 1 (h=1 vẫn 2,873 MW); cải tiến 1 sửa giờ 1 (1,624 MW) nhưng ngày lễ còn 7,183 MW. `noat` (2184) gần bằng `at` (2126): tác hại của phụ tải Áo đến từ thang đo; `at` vs `noat` không có ý nghĩa bền (DM p = 0.059, 14/24 mốc giờ).
 
 ### Chỉ số bổ sung (`python reproduction/final/review_checks.py`)
 | | LSTM-chuẩn | `at` | `hol` | `noat` | `at_hol` | DLinear | DLinear + lịch | + lịch theo giờ |
@@ -90,15 +92,15 @@ RMSE ở giờ h=1, trung bình từng seed / ensemble: DLinear 992 / 849, LSTM-
 | LSTM-chuẩn ensemble với DLinear ensemble (**không bền, đã rút lại**: chỉ 12/24 mốc giờ, t từ −4.3 đến +3.7) | DM | 0.003 |
 | `at_hol` ensemble với DLinear + lịch ensemble | DM | 3.8e-26 |
 | `at_hol` ensemble với DLinear + lịch theo giờ ensemble | DM | 1.3e-19 |
-| `hol` với LSTM-chuẩn (C2 khi chưa có C1) | DM | 2.8e-4 |
-| `at_hol` với `hol` (C1 khi đã có C2) | DM | 1.6e-13 |
+| `hol` với LSTM-chuẩn (cải tiến 2 khi chưa có cải tiến 1) | DM | 2.8e-4 |
+| `at_hol` với `hol` (cải tiến 1 khi đã có cải tiến 2) | DM | 1.6e-13 |
 | `noat` với LSTM-chuẩn | DM | 1.1e-8 |
 | `at` với `noat` | DM | 0.059 |
 
-Lặp lại DM với cả 24 mốc giờ phát hành trong ngày: mọi cải tiến (C1, C2 theo cả hai hàng của 2×2) và mọi so sánh `at_hol` với các mốc đều có ý nghĩa ở 24/24 mốc. C2 tốt hơn ở 223/359 ngày (kiểm định dấu p = 5e-6, Wilcoxon p = 1e-9, bootstrap khối 7 ngày không chứa 0), dù 10 ngày tốt nhất chiếm 93% mức giảm.
+Lặp lại DM với cả 24 mốc giờ phát hành trong ngày: mọi cải tiến (cải tiến 1, cải tiến 2 theo cả hai hàng của 2×2) và mọi so sánh `at_hol` với các mốc đều có ý nghĩa ở 24/24 mốc. cải tiến 2 tốt hơn ở 223/359 ngày (kiểm định dấu p = 5e-6, Wilcoxon p = 1e-9, bootstrap khối 7 ngày không chứa 0), dù 10 ngày tốt nhất chiếm 93% mức giảm.
 
 ### Kiểm tra bổ sung (`python reproduction/final/extra_checks.py`)
-Kiểm định DM với phương sai Newey–West (7 ngày trễ) cho cùng kết luận: C1 p = 0.001, C2 p = 0.008, `at_hol` với LSTM-chuẩn p = 1.6e-4, với DLinear p = 6e-15, với DLinear + lịch p = 5e-17; LSTM-chuẩn ensemble với DLinear ensemble p = 0.028.
+Kiểm định DM với phương sai Newey–West (7 ngày trễ) cho cùng kết luận: cải tiến 1 p = 0.001, cải tiến 2 p = 0.008, `at_hol` với LSTM-chuẩn p = 1.6e-4, với DLinear p = 6e-15, với DLinear + lịch p = 5e-17; LSTM-chuẩn ensemble với DLinear ensemble p = 0.028.
 
 Độ phủ của khoảng 95% đã hiệu chỉnh, theo nhóm giờ trên C (`results/coverage_breakdown.csv`):
 

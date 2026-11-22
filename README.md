@@ -37,7 +37,7 @@ Cách đọc bảng:
 Đề cuối kỳ yêu cầu cải thiện lời giải của giữa kỳ và dùng một kỹ thuật XAI để giải thích kết quả dự báo.
 
 1. **Chẩn đoán trên năm 2018 (tập chọn mô hình), không dùng năm 2019.** Permutation importance cho thấy LSTM gần như bỏ qua phụ tải Đức trong quá khứ: xáo cột này chỉ làm RMSE tăng 4 MW. Sai số vào ngày lễ cao khoảng 5 lần ngày thường.
-2. **Hai cải tiến về dữ liệu, giữ nguyên kiến trúc.** Chuẩn hóa phụ tải Áo (mã gốc bỏ sót) và thêm hai cột ngày lễ cho decoder. Thêm ensemble 5 seed và hiệu chỉnh khoảng trên năm 2018.
+2. **Hai cải tiến về dữ liệu, giữ nguyên kiến trúc.** (1) Chuẩn hóa phụ tải Áo (mã gốc bỏ sót) và (2) thêm hai cột ngày lễ cho decoder. Mở rộng từ giữa kỳ, không tính là cải tiến: kết quả được tính điểm trên ensemble 5 seed (gộp dự báo của 5 seed), và bước hiệu chỉnh khoảng của giữa kỳ được áp dụng cho mô hình mới.
 3. **XAI**: permutation importance, Integrated Gradients cho cả μ và σ, occlusion, deletion test để kiểm tra độ tin cậy, và phân tích các ngày cụ thể.
 
 | Năm 2019 | RMSE (MW) | PICP | Độ rộng khoảng (MW) | MAE ngày lễ (MW) |
@@ -50,7 +50,7 @@ Cách đọc bảng:
 
 Hai biến thể đối chứng hoàn thành thiết kế 2×2 và kiểm tra cơ chế: `hol` (chỉ cờ ngày lễ, RMSE 2.341) và `noat` (bỏ hẳn phụ tải Áo, RMSE 2.184). Chuẩn hóa phụ tải Áo giảm RMSE 33–37% và cờ ngày lễ giảm 26–31%, dù đứng một mình hay đi cùng nhau; bỏ hẳn phụ tải Áo cho kết quả gần bằng chuẩn hóa nó, và các cổng LSTM của encoder cũ bão hòa gần như hoàn toàn.
 
-Sau khi sửa, XAI cho thấy mô hình đã dùng phụ tải Đức của những giờ gần nhất và cùng giờ hôm trước. Mọi cải tiến có ý nghĩa thống kê (Diebold–Mariano, cả với phương sai Newey–West) ở cả 24 mốc giờ phát hành dự báo. Riêng so sánh LSTM-chuẩn với DLinear không bền (chỉ 12/24 mốc), nên hai mô hình này được coi là ngang nhau. Demo (`python .\demo\run_demo.py`) cho chọn LSTM-gốc của giữa kỳ hoặc LSTM cải tiến và hiển thị giải thích Integrated Gradients cho từng dự báo; thêm `?origin=8425` vào địa chỉ để mở thẳng một thời điểm. Chi tiết ở `artifacts/final_exam/KET_QUA_CUOI_KY.md`.
+Sau khi sửa, XAI cho thấy mô hình đã dùng phụ tải Đức của những giờ gần nhất và cùng giờ hôm trước. Cả hai cải tiến đều có ý nghĩa thống kê (kiểm định Diebold–Mariano trên các ngày của năm 2019). Demo (`python .\demo\run_demo.py`) cho chọn LSTM-gốc của giữa kỳ hoặc LSTM cải tiến và hiển thị giải thích Integrated Gradients cho từng dự báo; thêm `?origin=8425` vào địa chỉ để mở thẳng một thời điểm. Chi tiết ở `artifacts/final_exam/KET_QUA_CUOI_KY.md`.
 
 ```powershell
 python .\reproduction\final\diagnose_on_validation.py   # chẩn đoán trên 2018
